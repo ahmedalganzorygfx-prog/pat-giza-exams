@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وتنسيق أزرار البرامج التدريبية في القائمة الجانبية
+# 🎨 CSS لتنسيق التطبيق وتوسيط عناصر السايدبار بالكامل
 st.markdown(
     """
     <style>
@@ -21,24 +21,45 @@ st.markdown(
         direction: rtl;
     }
 
+    /* 🎯 محاذاة وتوسيط عناصر السايدبار بالكامل */
     [data-testid="stSidebar"] {
         direction: rtl;
-        text-align: right;
+        text-align: center !important;
     }
 
-    /* 🛠️ إخفاء عناصر السايدبار بالكامل عند التقليص لمنع ظهور الحروف العمودية */
+    [data-testid="stSidebar"] [data-testid="stSidebarContent"] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    /* 🛠️ إخفاء عناصر السايدبار عند التقليص */
     [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarContent"] {
         display: none !important;
     }
 
-    /* 🔘 تنسيق أزرار الراديو بداخل السايدبار على شكل تبويبات رأسية أنيقة */
+    /* 🎯 توسيط عنوان السايدبار */
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* 🔘 توسيط حاوية أزرار الراديو بداخل السايدبار */
+    [data-testid="stSidebar"] div[data-testid="stRadio"] {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+
     [data-testid="stSidebar"] div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: column !important;
         gap: 10px !important;
         width: 100% !important;
+        align-items: center !important;
     }
 
+    /* 🎨 تنسيق أزرار التبويبات وتوسيط النص بالداخل */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #e2e8f0 !important;
@@ -53,18 +74,19 @@ st.markdown(
         width: 100% !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: flex-start !important;
+        justify-content: center !important; /* توسيط النص بداخل الزر */
+        text-align: center !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label > div:first-child {
-        display: none !important;
+        display: none !important; /* إخفاء نقطة الراديو الدائرية */
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
         background: #334155 !important;
         border-color: #38bdf8 !important;
         color: #ffffff !important;
-        transform: translateX(-4px) !important;
+        transform: translateY(-2px) !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"] {
@@ -83,6 +105,7 @@ st.markdown(
         text-align: center;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         margin-top: 20px;
+        width: 100%;
     }
 
     .sidebar-footer-card p {
@@ -238,8 +261,11 @@ header_html = f"""
 
 st.markdown(header_html, unsafe_allow_html=True)
 
-# 3. القائمة الجانبية (Sidebar) - تبويبات البرامج التدريبية
-st.sidebar.header("🎯 البرامج التدريبية")
+# 3. القائمة الجانبية (Sidebar) - عناصر البرامج التفاعلية في المنتصف
+st.sidebar.markdown(
+    "<h3 style='text-align: center;'>🎯 البرامج التدريبية</h3>",
+    unsafe_allow_html=True,
+)
 
 program_options = [
     "الكل",
