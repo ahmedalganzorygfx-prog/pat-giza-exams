@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وإصلاح مشكلة الحروف الرأسية عند تقليص القائمة الجانبية
+# 🎨 CSS لتنسيق التطبيق وإصلاح مشكلة الحروف وتوضيح نص القائمة الجانبية
 st.markdown(
     """
     <style>
@@ -34,6 +34,21 @@ st.markdown(
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+    }
+
+    /* 💡 تنسيق صندوق الحقوق والمعلومات في السايدبار ليكون ناصع الوضوح */
+    div[data-testid="stSidebar"] div[data-testid="stAlert"] {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+        border: 1px solid #38bdf8 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    div[data-testid="stSidebar"] div[data-testid="stAlert"] * {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 15px !important;
+        text-align: center !important;
     }
 
     /* 🎯 بطاقة الهيدر الملونة والأنيقة */
@@ -227,7 +242,9 @@ uploaded_file = st.sidebar.file_uploader(
 )
 
 st.sidebar.divider()
-st.sidebar.info("تصميم وتنفيذ:\nأحمد الجنزوري - مدير الفرع")
+
+# عرض نص حقوق التصميم والتنفيذ بلون ناصع وواضح
+st.sidebar.info("✨ تصميم وتنفيذ:\nأحمد الجنزوري - مدير الفرع")
 
 # 4. جلب وتجهيز البيانات
 if uploaded_file is not None:
