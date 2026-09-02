@@ -10,11 +10,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتوسيط العناوين والتبويبات وجعل التبويبات بارزة كأزرار
+# 🎨 CSS فائق القوة لإجبار Streamlit على إظهار التبويبات كأزرار بارزة جداً
 st.markdown(
     """
     <style>
-    /* الاتجاه العام RTL */
+    /* محاذاة الصفحة بالكامل RTL */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
     }
@@ -24,23 +24,23 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🎯 توسيط العناوين الرئيسية الفرعية */
+    /* 🎯 توسيط العناوين الرئيسية */
     .section-title-center {
         text-align: center !important;
         font-size: 24px !important;
         font-weight: 800 !important;
-        color: #f8fafc !important;
-        margin-top: 15px !important;
-        margin-bottom: 15px !important;
+        color: #ffffff !important;
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
     }
 
-    /* 🎯 توسيط عنوان الصفحة والهيدر */
+    /* 🎯 الهيدر الرئيسي */
     .header-container {
         text-align: center;
         padding: 10px 0px 20px 0px;
     }
     .main-title {
-        color: #f8fafc;
+        color: #ffffff;
         font-size: 28px;
         font-weight: 800;
         margin-bottom: 5px;
@@ -52,80 +52,89 @@ st.markdown(
         margin-top: 0px;
     }
 
-    /* 🌟 توسيط قائمة التبويبات بالكامل وإبرازها */
-    div[data-baseweb="tab-list"] {
+    /* 🌟🔥 جعل container التبويبات كشريط أزرار بارز بالكامل 🔥🌟 */
+    [data-testid="stTabs"] {
         direction: rtl !important;
-        justify-content: center !important; /* توسيط التبويبات في منتصف الشاشة */
+    }
+
+    div[aria-label="Tabs"], div[role="tablist"], [data-baseweb="tab-list"] {
+        display: flex !important;
+        justify-content: center !important;
         gap: 12px !important;
         background-color: #0f172a !important;
-        padding: 12px !important;
-        border-radius: 12px !important;
-        border: 1px solid #1e293b !important;
-        margin: 0 auto !important;
+        padding: 12px 18px !important;
+        border-radius: 16px !important;
+        border: 2px solid #334155 !important;
+        margin-bottom: 25px !important;
     }
 
-    /* 🏷️ تصميم التبويب كـ زر بارز (Button Style) */
-    button[data-baseweb="tab"] {
-        background-color: #1e293b !important;
-        color: #cbd5e1 !important;
-        border-radius: 8px !important;
-        padding: 10px 22px !important;
-        font-size: 15px !important;
-        font-weight: bold !important;
-        border: 1px solid #334155 !important;
-        transition: all 0.3s ease !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
+    /* 🔘 زر التبويب الافتراضي - بارز ومجسم */
+    button[role="tab"], button[data-baseweb="tab"] {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+        color: #e2e8f0 !important;
+        border-radius: 10px !important;
+        padding: 12px 24px !important;
+        font-size: 16px !important;
+        font-weight: 800 !important;
+        border: 1px solid #475569 !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4) !important;
+        transition: all 0.25s ease-in-out !important;
+        margin: 0 4px !important;
+        cursor: pointer !important;
     }
 
-    /* 🖱️ عند مرور الماوس */
-    button[data-baseweb="tab"]:hover {
-        background-color: #334155 !important;
+    /* 🖱️ عند تحريك الماوس فوق الزر */
+    button[role="tab"]:hover, button[data-baseweb="tab"]:hover {
+        background: #334155 !important;
         color: #ffffff !important;
         border-color: #38bdf8 !important;
-        transform: translateY(-1px);
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 12px rgba(56, 189, 248, 0.25) !important;
     }
 
-    /* 🎯 التبويب النشط المختار */
-    button[data-baseweb="tab"][aria-selected="true"] {
-        background-color: #0284c7 !important;
+    /* 🎯⚡ الزر المحدد/النشط (Selected Active Button) ⚡🎯 */
+    button[role="tab"][aria-selected="true"], button[data-baseweb="tab"][aria-selected="true"] {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
         color: #ffffff !important;
-        border-color: #38bdf8 !important;
-        box-shadow: 0 0 14px rgba(2, 132, 199, 0.7) !important;
+        border: 2px solid #38bdf8 !important;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.7), 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+        transform: scale(1.03) !important;
     }
 
-    /* إخفاء الخط السفلي الافتراضي */
-    div[data-baseweb="tab-highlight"] {
+    /* إخفاء الخط الأفق السفي الافتراضي المموه لـ Streamlit */
+    [data-baseweb="tab-highlight"], div[data-baseweb="tab-border"] {
         display: none !important;
+        height: 0px !important;
     }
 
     /* 📊 كروت الإحصائيات */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
-        padding: 15px !important;
+        padding: 16px !important;
         border-radius: 12px !important;
         border: 1px solid #334155 !important;
         text-align: center !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
     }
 
     div[data-testid="stMetricLabel"] {
         color: #94a3b8 !important;
-        font-size: 14px !important;
-        font-weight: 600 !important;
+        font-size: 15px !important;
+        font-weight: 700 !important;
         justify-content: center !important;
     }
 
     div[data-testid="stMetricValue"] {
         color: #f8fafc !important;
-        font-size: 26px !important;
-        font-weight: bold !important;
+        font-size: 28px !important;
+        font-weight: 800 !important;
     }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر والشعار
+# 2. الهيدر وشعار الفرع (في المنتصف)
 logo_path = "logo.png"
 if os.path.exists(logo_path):
     c_left, c_mid, c_right = st.columns([1, 4, 1])
@@ -193,7 +202,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية (عنوان موسط + تبويبات بارزة وموسطة)
+# 6. البرامج التدريبية (عنوان موسط + أزرار تبويب بارزة جداً)
 st.markdown(
     '<div class="section-title-center">🎯 البرامج التدريبية</div>',
     unsafe_allow_html=True,
