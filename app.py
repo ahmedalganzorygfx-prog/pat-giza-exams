@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# تحسين المظهر ودعم اتجاه اليمين (RTL) ونقل القائمة الجانبية لليمين
+# 🎨 تحسين المظهر ودعم اتجاه اليمين (RTL) وإصلاح ألوان الكروت للوضع الداكن/الفاتح
 st.markdown(
     """
     <style>
@@ -20,20 +20,33 @@ st.markdown(
         text-align: right;
     }
     
-    /* جعل القائمة الجانبية تبدو وتستقر ناحية اليمين */
+    /* القائمة الجانبية */
     [data-testid="stSidebar"] {
         direction: rtl;
         text-align: right;
     }
 
-    /* تنسيق كروت الإحصائيات */
+    /* 🛠️ إصلاح مظهر كروت الإحصائيات (Metrics) لتبدو واضحة جداً */
     div[data-testid="stMetric"] {
-        text-align: right;
-        background-color: #ffffff;
-        padding: 12px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        border: 1px solid #e2e8f0;
+        background-color: #1e293b !important; /* خلفية كحلي داكنة أنيقة */
+        padding: 15px !important;
+        border-radius: 12px !important;
+        border: 1px solid #334155 !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* لون عنوان الكارت */
+    div[data-testid="stMetricLabel"] {
+        color: #94a3b8 !important; /* لون رمادي فاتح واضح */
+        font-size: 14px !important;
+        font-weight: 600 !important;
+    }
+
+    /* لون الرقم داخل الكارت */
+    div[data-testid="stMetricValue"] {
+        color: #f8fafc !important; /* لون أبيض ناصع واضح جداً */
+        font-size: 26px !important;
+        font-weight: bold !important;
     }
 
     /* تحسين شكل التبويبات (Tabs) */
@@ -51,12 +64,10 @@ st.markdown(
 col_title, col_logo = st.columns([4, 1])
 
 with col_logo:
-    # التحقق من وجود صورة اللوجو محلياً، وإلا استخدام صورة افتراضية شغالة
     logo_path = "logo.png"
     if os.path.exists(logo_path):
         st.image(logo_path, width=120)
     else:
-        # رابط صورة شعار افتراضي مباشر يعمل أونلاين
         st.image(
             "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
             width=100,
@@ -68,7 +79,7 @@ with col_title:
 
 st.divider()
 
-# 3. القائمة الجانبية (Sidebar) - رفع الملفات فقط
+# 3. القائمة الجانبية (Sidebar)
 st.sidebar.header("📁 إدارة البيانات")
 
 uploaded_file = st.sidebar.file_uploader(
@@ -118,21 +129,17 @@ program_options = [
     "أساسيات التوجيه الفني",
 ]
 
-# إنشاء التبويبات أفقياً
 tabs = st.tabs(program_options)
 
-# لمعرفة التبويب المحدد
 for tab, program_name in zip(tabs, program_options):
     with tab:
         filtered_df = df.copy()
 
-        # تصفية البيانات حسب التبويب المختار
         if program_name != "الكل" and "البرنامج" in filtered_df.columns:
             filtered_df = filtered_df[
                 filtered_df["البرنامج"] == program_name
             ]
 
-        # تصفية التاريخ
         if selected_date and "وقت أداء الاختبار" in filtered_df.columns:
             date_str = str(selected_date)
             filtered_df = filtered_df[
@@ -141,7 +148,6 @@ for tab, program_name in zip(tabs, program_options):
                 .str.startswith(date_str)
             ]
 
-        # تصفية البحث
         if search_query:
             cond_code = (
                 filtered_df["كود المعلم"].str.contains(
@@ -188,7 +194,7 @@ for tab, program_name in zip(tabs, program_options):
             else 0
         )
 
-        # عرض بطاقات الإحصائيات داخل التبويب
+        # عرض بطاقات الإحصائيات مع الإصلاح
         st.write("#### 📊 الإحصائيات العامة")
         c1, c2, c3, c4, c5 = st.columns(5)
 
