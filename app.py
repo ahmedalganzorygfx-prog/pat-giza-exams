@@ -10,19 +10,28 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 تنسيق CSS شامل (توسيط الهيدر + تبويبات بارزة + ألوان داكنة)
+# 🎨 CSS لتوسيط العناوين والتبويبات وجعل التبويبات بارزة كأزرار
 st.markdown(
     """
     <style>
-    /* محاذاة الصفحة بالكامل RTL */
+    /* الاتجاه العام RTL */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
-        text-align: right;
     }
-    
+
     [data-testid="stSidebar"] {
         direction: rtl;
         text-align: right;
+    }
+
+    /* 🎯 توسيط العناوين الرئيسية الفرعية */
+    .section-title-center {
+        text-align: center !important;
+        font-size: 24px !important;
+        font-weight: 800 !important;
+        color: #f8fafc !important;
+        margin-top: 15px !important;
+        margin-bottom: 15px !important;
     }
 
     /* 🎯 توسيط عنوان الصفحة والهيدر */
@@ -43,45 +52,48 @@ st.markdown(
         margin-top: 0px;
     }
 
-    /* 🌟 حاوية التبويبات البارزة */
+    /* 🌟 توسيط قائمة التبويبات بالكامل وإبرازها */
     div[data-baseweb="tab-list"] {
         direction: rtl !important;
+        justify-content: center !important; /* توسيط التبويبات في منتصف الشاشة */
         gap: 12px !important;
         background-color: #0f172a !important;
-        padding: 10px !important;
+        padding: 12px !important;
         border-radius: 12px !important;
         border: 1px solid #1e293b !important;
+        margin: 0 auto !important;
     }
 
-    /* 🏷️ تصميم التبويب كزر بارز */
+    /* 🏷️ تصميم التبويب كـ زر بارز (Button Style) */
     button[data-baseweb="tab"] {
         background-color: #1e293b !important;
-        color: #94a3b8 !important;
+        color: #cbd5e1 !important;
         border-radius: 8px !important;
-        padding: 10px 20px !important;
+        padding: 10px 22px !important;
         font-size: 15px !important;
         font-weight: bold !important;
         border: 1px solid #334155 !important;
         transition: all 0.3s ease !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
     }
 
-    /* 🖱️ تأثير التمرير (Hover) */
+    /* 🖱️ عند مرور الماوس */
     button[data-baseweb="tab"]:hover {
         background-color: #334155 !important;
         color: #ffffff !important;
-        border-color: #0284c7 !important;
+        border-color: #38bdf8 !important;
+        transform: translateY(-1px);
     }
 
-    /* 🎯 التبويب المختار (Active Tab) */
+    /* 🎯 التبويب النشط المختار */
     button[data-baseweb="tab"][aria-selected="true"] {
         background-color: #0284c7 !important;
         color: #ffffff !important;
         border-color: #38bdf8 !important;
-        box-shadow: 0 0 12px rgba(2, 132, 199, 0.6) !important;
+        box-shadow: 0 0 14px rgba(2, 132, 199, 0.7) !important;
     }
 
-    /* إخفاء الخط السفلي الافتراضي لـ Streamlit */
+    /* إخفاء الخط السفلي الافتراضي */
     div[data-baseweb="tab-highlight"] {
         display: none !important;
     }
@@ -92,6 +104,7 @@ st.markdown(
         padding: 15px !important;
         border-radius: 12px !important;
         border: 1px solid #334155 !important;
+        text-align: center !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
     }
 
@@ -99,6 +112,7 @@ st.markdown(
         color: #94a3b8 !important;
         font-size: 14px !important;
         font-weight: 600 !important;
+        justify-content: center !important;
     }
 
     div[data-testid="stMetricValue"] {
@@ -111,7 +125,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر والشعار (متوسط في المنتصف)
+# 2. الهيدر والشعار
 logo_path = "logo.png"
 if os.path.exists(logo_path):
     c_left, c_mid, c_right = st.columns([1, 4, 1])
@@ -179,8 +193,11 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية كـ تبويبات بارزة
-st.write("### 🎯 البرامج التدريبية:")
+# 6. البرامج التدريبية (عنوان موسط + تبويبات بارزة وموسطة)
+st.markdown(
+    '<div class="section-title-center">🎯 البرامج التدريبية</div>',
+    unsafe_allow_html=True,
+)
 
 program_options = [
     "الكل",
@@ -196,13 +213,11 @@ for tab, program_name in zip(tabs, program_options):
     with tab:
         filtered_df = df.copy()
 
-        # تصفية حسب البرنامج التدريبي
         if program_name != "الكل" and "البرنامج" in filtered_df.columns:
             filtered_df = filtered_df[
                 filtered_df["البرنامج"] == program_name
             ]
 
-        # تصفية حسب التاريخ
         if selected_date and "وقت أداء الاختبار" in filtered_df.columns:
             date_str = str(selected_date)
             filtered_df = filtered_df[
@@ -211,7 +226,6 @@ for tab, program_name in zip(tabs, program_options):
                 .str.startswith(date_str)
             ]
 
-        # تصفية حسب البحث (الكود أو الرقم القومي)
         if search_query:
             cond_code = (
                 filtered_df["كود المعلم"].str.contains(
@@ -229,7 +243,12 @@ for tab, program_name in zip(tabs, program_options):
             )
             filtered_df = filtered_df[cond_code | cond_id]
 
-        # 7. حساب الإحصائيات
+        # 7. الإحصائيات العامة (عنوان موسط)
+        st.markdown(
+            '<div class="section-title-center">📊 الإحصائيات العامة</div>',
+            unsafe_allow_html=True,
+        )
+
         total = len(filtered_df)
         reserved = (
             len(
@@ -258,9 +277,7 @@ for tab, program_name in zip(tabs, program_options):
             else 0
         )
 
-        st.write("#### 📊 الإحصائيات العامة")
         c1, c2, c3, c4, c5 = st.columns(5)
-
         c1.metric("📊 إجمالي الممتحنين", total)
         c2.metric("🎟️ حجز اختبار", reserved)
         c3.metric("✅ ناجحين", passed)
@@ -269,8 +286,11 @@ for tab, program_name in zip(tabs, program_options):
 
         st.divider()
 
-        # 8. عرض جدول البيانات
-        st.write("#### 📋 جدول بيانات المعلمين")
+        # 8. جدول بيانات المعلمين (عنوان موسط)
+        st.markdown(
+            '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
+            unsafe_allow_html=True,
+        )
 
         columns_to_show = [
             col
