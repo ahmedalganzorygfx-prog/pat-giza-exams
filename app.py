@@ -29,26 +29,26 @@ st.markdown(
     [data-testid="stSidebar"][aria-expanded="false"] {
         margin-left: 0rem !important;
     }
-    
-    [data-testid="stSidebar"] * {
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+
+    /* 💡 بطاقة الحقوق المخصصة في السايدبار */
+    .sidebar-footer-card {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 1px solid #38bdf8;
+        border-radius: 12px;
+        padding: 12px 10px;
+        text-align: center;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        margin-top: 10px;
     }
 
-    /* 💡 تنسيق صندوق الحقوق والمعلومات في السايدبار ليكون ناصع الوضوح */
-    div[data-testid="stSidebar"] div[data-testid="stAlert"] {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-        border: 1px solid #38bdf8 !important;
-        border-radius: 12px !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    div[data-testid="stSidebar"] div[data-testid="stAlert"] * {
+    .sidebar-footer-card p {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 15px !important;
-        text-align: center !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+        margin: 0 !important;
+        white-space: normal !important; /* السماح بالنص بالالتفاف على سطرين */
+        word-wrap: break-word !important;
     }
 
     /* 🎯 بطاقة الهيدر الملونة والأنيقة */
@@ -243,8 +243,15 @@ uploaded_file = st.sidebar.file_uploader(
 
 st.sidebar.divider()
 
-# عرض نص حقوق التصميم والتنفيذ بلون ناصع وواضح
-st.sidebar.info("✨ تصميم وتنفيذ:\nأحمد الجنزوري - مدير الفرع")
+# عرض الحقوق عبر بطاقة HTML مخصصة ومطابقة للتصميم
+st.sidebar.markdown(
+    """
+    <div class="sidebar-footer-card">
+        <p>✨ تصميم وتنفيذ:<br><b>أحمد الجنزوري - مدير الفرع</b></p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # 4. جلب وتجهيز البيانات
 if uploaded_file is not None:
@@ -267,130 +274,14 @@ with col_search:
     search_query = st.text_input("🔍 بحث بالرقم القومي أو كود المعلم:")
 
 with col_date:
-    selected_date = st.date_input("📅 تاريخ الاختبار:", value=None)
+    selected_date =المشكلة تكمن في **ضعف التباين (Low Contrast)** و**اقتصاص النص (Text Truncation)** داخل العنصر الوهمي أو الزر (Widget/Label).
 
-with col_reset:
-    st.write(" ")
-    st.write(" ")
-    if st.button("🔄 إعادة تعيين", use_container_width=True):
-        st.rerun()
+**سبب المشكلة وكيفية حلها:**
 
-# 6. البرامج التدريبية
-st.markdown(
-    '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
-    unsafe_allow_html=True,
-)
-
-program_options = [
-    "الكل",
-    "تطبيقات تربوية للمعلم المساعد",
-    "مدير ووكيل ادارة مدرسية",
-    "مدير ووكيل ادارة تعليمية",
-    "أساسيات التوجيه الفني",
-]
-
-selected_program = st.radio(
-    label="اختر البرنامج",
-    options=program_options,
-    horizontal=True,
-    label_visibility="collapsed",
-)
-
-# 7. فلترة البيانات
-filtered_df = df.copy()
-
-if selected_program != "الكل" and "البرنامج" in filtered_df.columns:
-    filtered_df = filtered_df[filtered_df["البرنامج"] == selected_program]
-
-if selected_date and "وقت أداء الاختبار" in filtered_df.columns:
-    date_str = str(selected_date)
-    filtered_df = filtered_df[
-        filtered_df["وقت أداء الاختبار"].astype(str).str.startswith(date_str)
-    ]
-
-if search_query:
-    cond_code = (
-        filtered_df["كود المعلم"].str.contains(
-            search_query, case=False, na=False
-        )
-        if "كود المعلم" in filtered_df.columns
-        else False
-    )
-    cond_id = (
-        filtered_df["الرقم القومي"].str.contains(
-            search_query, case=False, na=False
-        )
-        if "الرقم القومي" in filtered_df.columns
-        else False
-    )
-    filtered_df = filtered_df[cond_code | cond_id]
-
-# 8. الإحصائيات العامة
-st.markdown(
-    '<div class="section-title-center">📊 الإحصائيات العامة</div>',
-    unsafe_allow_html=True,
-)
-
-total = len(filtered_df)
-reserved = (
-    len(
-        filtered_df[
-            filtered_df["الحالة"].isin(["محجوز", "حجز اختبار", "لم يختبر"])
-        ]
-    )
-    if "الحالة" in filtered_df.columns
-    else 0
-)
-passed = (
-    len(filtered_df[filtered_df["الحالة"] == "اجتاز"])
-    if "الحالة" in filtered_df.columns
-    else 0
-)
-failed = (
-    len(filtered_df[filtered_df["الحالة"] == "راسب"])
-    if "الحالة" in filtered_df.columns
-    else 0
-)
-pending = (
-    len(filtered_df[filtered_df["الحالة"] == "قيد الاختبار"])
-    if "الحالة" in filtered_df.columns
-    else 0
-)
-
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("📊 إجمالي الممتحنين", total)
-c2.metric("🎟️ حجز اختبار", reserved)
-c3.metric("✅ ناجحين", passed)
-c4.metric("❌ راسبين", failed)
-c5.metric("⏳ قيد الاختبار", pending)
-
-st.divider()
-
-# 9. جدول بيانات المعلمين
-st.markdown(
-    '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
-    unsafe_allow_html=True,
-)
-
-columns_to_show = [
-    col
-    for col in [
-        "كود المعلم",
-        "اسم المعلم",
-        "الرقم القومي",
-        "البرنامج",
-        "الحالة",
-        "وقت أداء الاختبار",
-        "الإجراء",
-    ]
-    if col in filtered_df.columns
-]
-
-if not filtered_df.empty:
-    st.dataframe(
-        filtered_df[columns_to_show],
-        use_container_width=True,
-        hide_index=True,
-    )
-else:
-    st.info("لا توجد نتائج تطابق خيارات البحث والتصفية لهذا البرنامج.")
+* **مشكلة اللون (التباين):** النص الأزرق الفاتح فوق الخلفية الزرقاء الداكنة يسبب صعوبة في القراءة. 
+  * **الحل:** قم بتغيير لون النص إلى الأبيض (`#FFFFFF`) أو درجة فاتحة جداً من الرمادي/الأصفر لزيادة التباين ووضوح النص بشكل ممتاز.
+* **مشكلة العبارة غير المكتملة (`...`):** العرض المخصص للمربع (`Width`) أصغر من حجم النص، أو تم ضبط الخاصية لتقتطع النص عند تجاوزه للحدود.
+  * **الحل:** 
+    * زيادة عرض المربع (Width) أو إزالة التحديد الثابت للـ `width`.
+    * إتاحة خاصية التفاف النص (`wraplength` في Tkinter أو ما يكافئها في الإطار الذي تستخدمه) ليعرض النص على سطرين إذا كان المربع محدداً.
+    * تقليل حجم الخط (`font size`) قليلاً ليتناسب مع المساحة المتاحة.
