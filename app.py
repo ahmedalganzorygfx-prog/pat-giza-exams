@@ -497,18 +497,21 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 🎯 تحديد ترتيب الأعمدة الصريح من اليمين إلى اليسار
-desired_order = [
-    "كود المعلم",
-    "اسم المعلم",
-    "الرقم القومي",
-    "البرنامج",
-    "الحالة",
+# 🎯 عكس ترتيب القائمة لتظهر بصرية في الجدول من اليمين إلى اليسار:
+# (أقصى اليمين: كود المعلم -> اسم المعلم -> الرقم القومي -> البرنامج -> الحالة -> وقت أداء الاختبار :أقصى اليسار)
+desired_order_rtl = [
     "وقت أداء الاختبار",
+    "الحالة",
+    "البرنامج",
+    "الرقم القومي",
+    "اسم المعلم",
+    "كود المعلم",
 ]
 
-# التأكد من وجود العمود في الملف قبل إضافته للترتيب
-columns_to_show = [col for col in desired_order if col in filtered_df.columns]
+# التأكد من وجود العمود في الملف
+columns_to_show = [
+    col for col in desired_order_rtl if col in filtered_df.columns
+]
 
 if not filtered_df.empty:
     st.dataframe(
