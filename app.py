@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وإصلاح مشكلة الحروف وتوضيح نص القائمة الجانبية
+# 🎨 CSS لتنسيق التطبيق وإخفاء المحتوى تماماً عند تقليص القائمة الجانبية
 st.markdown(
     """
     <style>
@@ -25,9 +25,9 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🛠️ حل مشكلة الحروف عند تقليص/إخفاء القائمة الجانبية */
-    [data-testid="stSidebar"][aria-expanded="false"] {
-        margin-left: 0rem !important;
+    /* 🛠️ حل مشكلة ظهور الحروف الرأسية: إخفاء عناصر السايدبار بالكامل عند التقليص */
+    [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarContent"] {
+        display: none !important;
     }
 
     /* 💡 بطاقة الحقوق المخصصة في السايدبار */
