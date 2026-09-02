@@ -10,48 +10,65 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 تحسين المظهر، دعم الـ RTL وإصلاح تنسيق التبويبات (Tabs) والوضع الداكن
+# 🎨 تنسيق CSS لتصنيفات وتبويبات بارزة جداً (Pill-style Tabs)
 st.markdown(
     """
     <style>
-    /* محاذاة الصفحة بالكامل */
+    /* محاذاة الصفحة بالكامل RTL */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
         text-align: right;
     }
     
-    /* القائمة الجانبية */
     [data-testid="stSidebar"] {
         direction: rtl;
         text-align: right;
     }
 
-    /* 🛠️ إصلاح مظهر وتنسيق التبويبات (Tabs) */
+    /* 🌟 جعل حاوية التبويبات بارزة مع مسافات مريحة */
     div[data-baseweb="tab-list"] {
         direction: rtl !important;
-        gap: 8px !important;
-        border-bottom: 2px solid #334155 !important;
+        gap: 12px !important;
+        background-color: #0f172a !important; /* خلفية داكنة للحاوية */
+        padding: 10px !important;
+        border-radius: 12px !important;
+        border: 1px solid #1e293b !important;
     }
 
+    /* 🏷️ تصميم التبويب كـ زر بارز (Button Style) */
     button[data-baseweb="tab"] {
         background-color: #1e293b !important;
-        color: #cbd5e1 !important;
-        border-radius: 8px 8px 0px 0px !important;
-        padding: 8px 16px !important;
-        font-size: 14px !important;
+        color: #94a3b8 !important;
+        border-radius: 8px !important;
+        padding: 10px 20px !important;
+        font-size: 15px !important;
         font-weight: bold !important;
         border: 1px solid #334155 !important;
-        border-bottom: none !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
     }
 
-    /* التبويب النشط (Selected Tab) */
-    button[data-baseweb="tab"][aria-selected="true"] {
-        background-color: #0284c7 !important; /* لون أزرق مميز للتبويب النشط */
+    /* 🖱️ تأثير عند إشارة الماوس (Hover) */
+    button[data-baseweb="tab"]:hover {
+        background-color: #334155 !important;
         color: #ffffff !important;
         border-color: #0284c7 !important;
     }
 
-    /* 🛠️ كروت الإحصائيات */
+    /* 🎯 التبويب المختار (Active Tab) - لون أزرق بارز مع إضاءة */
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #0284c7 !important;
+        color: #ffffff !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 12px rgba(2, 132, 199, 0.6) !important;
+    }
+
+    /* إخفاء الخط السفلي الافتراضي لـ Streamlit */
+    div[data-baseweb="tab-highlight"] {
+        display: none !important;
+    }
+
+    /* 📊 كروت الإحصائيات */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 15px !important;
@@ -134,8 +151,8 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية كـ تبويبات (Tabs)
-st.write("### 🎯 اختر البرنامج التدريبي:")
+# 6. البرامج التدريبية كـ تبويبات بارزة
+st.write("### 🎯 البرامج التدريبية:")
 
 program_options = [
     "الكل",
