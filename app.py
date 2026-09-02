@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وتنسيق القائمة الجانبية
+# 🎨 CSS لتنسيق التطبيق وتنسيق أزرار البرامج التدريبية في القائمة الجانبية
 st.markdown(
     """
     <style>
@@ -31,6 +31,49 @@ st.markdown(
         display: none !important;
     }
 
+    /* 🔘 تنسيق أزرار الراديو بداخل السايدبار على شكل تبويبات رأسية أنيقة */
+    [data-testid="stSidebar"] div[data-testid="stRadio"] > div {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stRadio"] label {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+        color: #e2e8f0 !important;
+        border: 2px solid #334155 !important;
+        padding: 12px 15px !important;
+        border-radius: 12px !important;
+        font-weight: 800 !important;
+        font-size: 14px !important;
+        cursor: pointer !important;
+        transition: all 0.25s ease-in-out !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stRadio"] label > div:first-child {
+        display: none !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
+        background: #334155 !important;
+        border-color: #38bdf8 !important;
+        color: #ffffff !important;
+        transform: translateX(-4px) !important;
+    }
+
+    [data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"] {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+        color: #ffffff !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
+    }
+
     /* 💡 بطاقة الحقوق المخصصة في السايدبار */
     .sidebar-footer-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
@@ -39,7 +82,7 @@ st.markdown(
         padding: 12px 10px;
         text-align: center;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        margin-top: 15px;
+        margin-top: 20px;
     }
 
     .sidebar-footer-card p {
@@ -195,7 +238,7 @@ header_html = f"""
 
 st.markdown(header_html, unsafe_allow_html=True)
 
-# 3. القائمة الجانبية (Sidebar) - وضع تصفية البرامج بالناحية اليمنى
+# 3. القائمة الجانبية (Sidebar) - تبويبات البرامج التدريبية
 st.sidebar.header("🎯 البرامج التدريبية")
 
 program_options = [
@@ -206,10 +249,11 @@ program_options = [
     "أساسيات التوجيه الفني",
 ]
 
-selected_program = st.sidebar.selectbox(
-    "اختر البرنامج التدريبي:",
+selected_program = st.sidebar.radio(
+    label="اختر البرنامج التدريبي:",
     options=program_options,
     index=0,
+    label_visibility="collapsed",
 )
 
 st.sidebar.divider()
