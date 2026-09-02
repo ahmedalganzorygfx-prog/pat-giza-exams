@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 تنسيق CSS لتصنيفات وتبويبات بارزة جداً (Pill-style Tabs)
+# 🎨 تنسيق CSS شامل (توسيط الهيدر + تبويبات بارزة + ألوان داكنة)
 st.markdown(
     """
     <style>
@@ -25,17 +25,35 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🌟 جعل حاوية التبويبات بارزة مع مسافات مريحة */
+    /* 🎯 توسيط عنوان الصفحة والهيدر */
+    .header-container {
+        text-align: center;
+        padding: 10px 0px 20px 0px;
+    }
+    .main-title {
+        color: #f8fafc;
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+    .sub-title {
+        color: #38bdf8;
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 0px;
+    }
+
+    /* 🌟 حاوية التبويبات البارزة */
     div[data-baseweb="tab-list"] {
         direction: rtl !important;
         gap: 12px !important;
-        background-color: #0f172a !important; /* خلفية داكنة للحاوية */
+        background-color: #0f172a !important;
         padding: 10px !important;
         border-radius: 12px !important;
         border: 1px solid #1e293b !important;
     }
 
-    /* 🏷️ تصميم التبويب كـ زر بارز (Button Style) */
+    /* 🏷️ تصميم التبويب كزر بارز */
     button[data-baseweb="tab"] {
         background-color: #1e293b !important;
         color: #94a3b8 !important;
@@ -48,14 +66,14 @@ st.markdown(
         box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
     }
 
-    /* 🖱️ تأثير عند إشارة الماوس (Hover) */
+    /* 🖱️ تأثير التمرير (Hover) */
     button[data-baseweb="tab"]:hover {
         background-color: #334155 !important;
         color: #ffffff !important;
         border-color: #0284c7 !important;
     }
 
-    /* 🎯 التبويب المختار (Active Tab) - لون أزرق بارز مع إضاءة */
+    /* 🎯 التبويب المختار (Active Tab) */
     button[data-baseweb="tab"][aria-selected="true"] {
         background-color: #0284c7 !important;
         color: #ffffff !important;
@@ -93,22 +111,32 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر وشعار الفرع
-col_title, col_logo = st.columns([4, 1])
-
-with col_logo:
-    logo_path = "logo.png"
-    if os.path.exists(logo_path):
-        st.image(logo_path, width=120)
-    else:
-        st.image(
-            "https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
-            width=100,
+# 2. الهيدر والشعار (متوسط في المنتصف)
+logo_path = "logo.png"
+if os.path.exists(logo_path):
+    c_left, c_mid, c_right = st.columns([1, 4, 1])
+    with c_mid:
+        st.markdown(
+            """
+            <div class="header-container">
+                <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+                <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
+            </div>
+            """,
+            unsafe_allow_html=True,
         )
-
-with col_title:
-    st.title("🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة")
-    st.subheader("📝 لوحة تحكم وإحصائيات الامتحانات أونلاين")
+    with c_right:
+        st.image(logo_path, width=110)
+else:
+    st.markdown(
+        """
+        <div class="header-container">
+            <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+            <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.divider()
 
@@ -168,11 +196,13 @@ for tab, program_name in zip(tabs, program_options):
     with tab:
         filtered_df = df.copy()
 
+        # تصفية حسب البرنامج التدريبي
         if program_name != "الكل" and "البرنامج" in filtered_df.columns:
             filtered_df = filtered_df[
                 filtered_df["البرنامج"] == program_name
             ]
 
+        # تصفية حسب التاريخ
         if selected_date and "وقت أداء الاختبار" in filtered_df.columns:
             date_str = str(selected_date)
             filtered_df = filtered_df[
@@ -181,6 +211,7 @@ for tab, program_name in zip(tabs, program_options):
                 .str.startswith(date_str)
             ]
 
+        # تصفية حسب البحث (الكود أو الرقم القومي)
         if search_query:
             cond_code = (
                 filtered_df["كود المعلم"].str.contains(
