@@ -1,4 +1,5 @@
 import base64
+import glob
 import os
 import pandas as pd
 import streamlit as st
@@ -25,7 +26,7 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🛠️ حل مشكلة ظهور الحروف الرأسية: إخفاء عناصر السايدبار بالكامل عند التقليص */
+    /* 🛠️ إخفاء عناصر السايدبار بالكامل عند التقليص لمنع ظهور الحروف العمودية */
     [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarContent"] {
         display: none !important;
     }
@@ -236,14 +237,9 @@ header_html = f"""
 st.markdown(header_html, unsafe_allow_html=True)
 
 # 3. القائمة الجانبية (Sidebar)
-st.sidebar.header("📁 إدارة البيانات")
-uploaded_file = st.sidebar.file_uploader(
-    "تحميل ملف الإكسيل (Excel)", type=["xlsx", "xls"]
-)
+st.sidebar.header("📁 لوحة التحكم")
 
-st.sidebar.divider()
-
-# عرض الحقوق عبر بطاقة HTML مخصصة ومطابقة للتصميم
+# عرض الحقوق بداخل السايدبار
 st.sidebar.markdown(
     """
     <div class="sidebar-footer-card">
@@ -253,18 +249,27 @@ st.sidebar.markdown(
     unsafe_allow_html=True,
 )
 
-# 4. جلب وتجهيز البيانات
-if uploaded_file is not None:
+
+# 4. البحث التلقائي عن ملف الإكسيل بداخل المشروع وقراءته
+@st.cache_data
+def load_data_from_project():
+    excel_files = glob.glob("*.xlsx") + glob.glob("*.xls")
+    if not excel_files:
+        return None, "لم يتم العثور على أي ملف إكسيل (.xlsx أو .xls) في مجلد المشروع."
+
+    file_path = excel_files[0]
     try:
-        df = pd.read_excel(uploaded_file, dtype=str).fillna("-")
+        df = pd.read_excel(file_path, dtype=str).fillna("-")
         df.columns = df.columns.str.strip()
+        return df, None
     except Exception as e:
-        st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
-        st.stop()
-else:
-    st.warning(
-        "⚠️ يرجى رفع ملف إكسيل من القائمة الجانبية (يمين الشاشة) لعرض البيانات والإحصائيات."
-    )
+        return None, f"حدث خطأ أثناء قراءة الملف {file_path}: {e}"
+
+
+df, err_msg = load_data_from_project()
+
+if err_msg:
+    st.error(f"⚠️ {err_msg}")
     st.stop()
 
 # 5. شريط البحث والتاريخ العلوي
