@@ -401,7 +401,7 @@ c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 🍩 الرسم البياني الدائري التفاعلي لنسب وعدد الممتحنين حسب البرنامج التدريبي
+# 🍩 الرسم البياني الدائري التفاعلي مع خريطة برامج من اليمين إلى اليسار
 if "البرنامج" in df.columns and not df.empty:
     st.markdown(
         '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج التدريبي</div>',
@@ -411,7 +411,7 @@ if "البرنامج" in df.columns and not df.empty:
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
-    # إنشاء رسم بياني دائري تفاعلي (Donut Chart) باستخدام Altair
+    # إنشاء رسم بياني دائري
     pie_chart = (
         alt.Chart(prog_counts)
         .mark_arc(innerRadius=60, outerRadius=120)
@@ -420,20 +420,25 @@ if "البرنامج" in df.columns and not df.empty:
             color=alt.Color(
                 field="البرنامج_التدريبي",
                 type="nominal",
-                title="البرنامج التدريبي",
-                scale=alt.Scale(
-                    scheme="category10"
-                ),  # ألوان متناسقة ومختلفة لكل قطاع
+                scale=alt.Scale(scheme="category10"),
+                legend=alt.Legend(
+                    title=None,
+                    orient="bottom",
+                    direction="horizontal",
+                    columns=2,  # ترتيب خريطة البرامج في أعمدة لتسهيل القراءة RTL
+                    labelFontSize=13,
+                    labelColor="white",
+                    symbolSize=100,
+                    symbolType="circle",
+                    labelLimit=300,
+                ),
             ),
             tooltip=[
                 alt.Tooltip("البرنامج_التدريبي", title="البرنامج"),
                 alt.Tooltip("عدد_الممتحنين", title="عدد الممتحنين"),
             ],
         )
-        .properties(height=380)
-        .configure_legend(
-            orient="bottom", labelFontSize=12, titleFontSize=13, labelColor="white", titleColor="white"
-        )
+        .properties(height=420)
         .configure_view(strokeWidth=0)
     )
 
