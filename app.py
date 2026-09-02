@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق وتوسيط اللوجو والعناوين داخل كارت ملون أنيق
+# 🎨 CSS لتنسيق وتوسيط اللوجو والعناوين بداخل كارت ملون أنيق
 st.markdown(
     """
     <style>
@@ -30,7 +30,7 @@ st.markdown(
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #334155;
         border-radius: 20px;
-        padding: 25px 20px;
+        padding: 30px 20px;
         text-align: center;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.15);
         margin-bottom: 25px;
@@ -40,16 +40,17 @@ st.markdown(
         justify-content: center;
     }
 
+    /* 🔍 تكبير حجم اللوجو (يمكن تعديل 200px للتكبير أو التصغير) */
     .header-logo {
-        width: 130px;
+        width: 200px;
         height: auto;
         margin-bottom: 15px;
-        filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.5));
+        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5));
     }
 
     .main-title {
         color: #ffffff;
-        font-size: 28px;
+        font-size: 30px;
         font-weight: 800;
         margin-bottom: 8px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -57,7 +58,7 @@ st.markdown(
 
     .sub-title {
         color: #38bdf8;
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
     }
 
@@ -170,7 +171,7 @@ st.markdown(
 )
 
 
-# دالة تحويل الصورة إلى Base64 لعرضها بداخل HTML بدقة
+# دالة تحويل الصورة إلى Base64
 def get_image_base64(path):
     if os.path.exists(path):
         with open(path, "rb") as image_file:
@@ -181,7 +182,7 @@ def get_image_base64(path):
     return None
 
 
-# 2. البحث عن اللوجو وعرضه داخل كارت أنيق ملون
+# 2. البحث عن اللوجو وعرضه
 possible_files = [
     "logo.png",
     "logo.jpg",
