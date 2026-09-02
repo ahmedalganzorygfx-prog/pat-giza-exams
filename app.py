@@ -10,11 +10,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 تحسين المظهر ودعم اتجاه اليمين (RTL) وإصلاح ألوان الكروت للوضع الداكن/الفاتح
+# 🎨 تحسين المظهر، دعم الـ RTL وإصلاح تنسيق التبويبات (Tabs) والوضع الداكن
 st.markdown(
     """
     <style>
-    /* محاذاة الصفحة بالكامل من اليمين إلى اليسار */
+    /* محاذاة الصفحة بالكامل */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
         text-align: right;
@@ -26,34 +26,50 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🛠️ إصلاح مظهر كروت الإحصائيات (Metrics) لتبدو واضحة جداً */
+    /* 🛠️ إصلاح مظهر وتنسيق التبويبات (Tabs) */
+    div[data-baseweb="tab-list"] {
+        direction: rtl !important;
+        gap: 8px !important;
+        border-bottom: 2px solid #334155 !important;
+    }
+
+    button[data-baseweb="tab"] {
+        background-color: #1e293b !important;
+        color: #cbd5e1 !important;
+        border-radius: 8px 8px 0px 0px !important;
+        padding: 8px 16px !important;
+        font-size: 14px !important;
+        font-weight: bold !important;
+        border: 1px solid #334155 !important;
+        border-bottom: none !important;
+    }
+
+    /* التبويب النشط (Selected Tab) */
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #0284c7 !important; /* لون أزرق مميز للتبويب النشط */
+        color: #ffffff !important;
+        border-color: #0284c7 !important;
+    }
+
+    /* 🛠️ كروت الإحصائيات */
     div[data-testid="stMetric"] {
-        background-color: #1e293b !important; /* خلفية كحلي داكنة أنيقة */
+        background-color: #1e293b !important;
         padding: 15px !important;
         border-radius: 12px !important;
         border: 1px solid #334155 !important;
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
     }
 
-    /* لون عنوان الكارت */
     div[data-testid="stMetricLabel"] {
-        color: #94a3b8 !important; /* لون رمادي فاتح واضح */
+        color: #94a3b8 !important;
         font-size: 14px !important;
         font-weight: 600 !important;
     }
 
-    /* لون الرقم داخل الكارت */
     div[data-testid="stMetricValue"] {
-        color: #f8fafc !important; /* لون أبيض ناصع واضح جداً */
+        color: #f8fafc !important;
         font-size: 26px !important;
         font-weight: bold !important;
-    }
-
-    /* تحسين شكل التبويبات (Tabs) */
-    button[data-baseweb="tab"] {
-        font-size: 15px !important;
-        font-weight: bold !important;
-        padding: 10px 20px !important;
     }
     </style>
 """,
@@ -194,7 +210,6 @@ for tab, program_name in zip(tabs, program_options):
             else 0
         )
 
-        # عرض بطاقات الإحصائيات مع الإصلاح
         st.write("#### 📊 الإحصائيات العامة")
         c1, c2, c3, c4, c5 = st.columns(5)
 
