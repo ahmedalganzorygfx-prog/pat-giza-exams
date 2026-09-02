@@ -1,6 +1,7 @@
 import base64
 import glob
 import os
+import matplotlib.pyplot as plt
 import pandas as pd
 import streamlit as st
 
@@ -74,12 +75,12 @@ st.markdown(
         width: 100% !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important; /* توسيط النص بداخل الزر */
+        justify-content: center !important;
         text-align: center !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label > div:first-child {
-        display: none !important; /* إخفاء نقطة الراديو الدائرية */
+        display: none !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
@@ -399,6 +400,37 @@ c2.metric("🎟️ حجز اختبار", reserved)
 c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
+
+# 📊 الرسم البياني لعدد الممتحنين لكل برنامج تدريبي
+if "البرنامج" in df.columns:
+    st.markdown("<br>", unsafe_allow_html=True)
+    prog_counts = df["البرنامج"].value_counts()
+
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    bars = ax.bar(
+        prog_counts.index, prog_counts.values, color="black", width=0.5
+    )
+
+    ax.set_title("📈 عدد الممتحنين لكل برنامج تدريبي", fontsize=14, weight="bold")
+    ax.set_ylabel("عدد الممتحنين", fontsize=11, weight="bold")
+    plt.xticks(rotation=15, ha="right", fontsize=10, weight="bold")
+    ax.grid(axis="y", linestyle="--", alpha=0.5)
+
+    # وضع الأرقام فوق الأعمدة
+    for bar in bars:
+        height = bar.get_height()
+        ax.annotate(
+            f"{int(height)}",
+            xy=(bar.get_x() + bar.get_width() / 2, height),
+            xytext=(0, 3),  # 3 points vertical offset
+            textcoords="offset points",
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            weight="bold",
+        )
+
+    st.pyplot(fig)
 
 st.divider()
 
