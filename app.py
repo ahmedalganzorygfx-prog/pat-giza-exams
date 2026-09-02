@@ -10,11 +10,11 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS فائق القوة لإجبار Streamlit على إظهار التبويبات كأزرار بارزة جداً
+# 🎨 CSS لتصميم أزرار التصفية لتكون منفصلة وبارزة جداً لكل برنامج
 st.markdown(
     """
     <style>
-    /* محاذاة الصفحة بالكامل RTL */
+    /* محاذاة RTL */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
     }
@@ -24,20 +24,19 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🎯 توسيط العناوين الرئيسية */
+    /* 🎯 توسيط العناوين */
     .section-title-center {
         text-align: center !important;
         font-size: 24px !important;
         font-weight: 800 !important;
         color: #ffffff !important;
         margin-top: 20px !important;
-        margin-bottom: 20px !important;
+        margin-bottom: 15px !important;
     }
 
-    /* 🎯 الهيدر الرئيسي */
     .header-container {
         text-align: center;
-        padding: 10px 0px 20px 0px;
+        padding: 10px 0px 15px 0px;
     }
     .main-title {
         color: #ffffff;
@@ -49,62 +48,50 @@ st.markdown(
         color: #38bdf8;
         font-size: 22px;
         font-weight: 700;
-        margin-top: 0px;
     }
 
-    /* 🌟🔥 جعل container التبويبات كشريط أزرار بارز بالكامل 🔥🌟 */
-    [data-testid="stTabs"] {
-        direction: rtl !important;
-    }
-
-    div[aria-label="Tabs"], div[role="tablist"], [data-baseweb="tab-list"] {
+    /* 🔘 تحويل st.radio إلى أزرار منفصلة وبارزة تماماً (Buttons) */
+    div[data-testid="stRadio"] > div {
         display: flex !important;
+        flex-direction: row-reverse !important; /* اتجاه من اليمين لليسار */
         justify-content: center !important;
+        flex-wrap: wrap !important;
         gap: 12px !important;
-        background-color: #0f172a !important;
-        padding: 12px 18px !important;
-        border-radius: 16px !important;
-        border: 2px solid #334155 !important;
-        margin-bottom: 25px !important;
     }
 
-    /* 🔘 زر التبويب الافتراضي - بارز ومجسم */
-    button[role="tab"], button[data-baseweb="tab"] {
+    div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #e2e8f0 !important;
-        border-radius: 10px !important;
-        padding: 12px 24px !important;
-        font-size: 16px !important;
+        border: 2px solid #334155 !important;
+        padding: 10px 20px !important;
+        border-radius: 12px !important;
         font-weight: 800 !important;
-        border: 1px solid #475569 !important;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4) !important;
-        transition: all 0.25s ease-in-out !important;
-        margin: 0 4px !important;
+        font-size: 15px !important;
         cursor: pointer !important;
+        transition: all 0.25s ease-in-out !important;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
     }
 
-    /* 🖱️ عند تحريك الماوس فوق الزر */
-    button[role="tab"]:hover, button[data-baseweb="tab"]:hover {
+    /* إخفاء الدائرة الافتراضية لـ Radio */
+    div[data-testid="stRadio"] label > div:first-child {
+        display: none !important;
+    }
+
+    /* 🖱️ عند مرور الماوس على الزر */
+    div[data-testid="stRadio"] label:hover {
         background: #334155 !important;
-        color: #ffffff !important;
         border-color: #38bdf8 !important;
+        color: #ffffff !important;
         transform: translateY(-2px) !important;
-        box-shadow: 0 6px 12px rgba(56, 189, 248, 0.25) !important;
     }
 
-    /* 🎯⚡ الزر المحدد/النشط (Selected Active Button) ⚡🎯 */
-    button[role="tab"][aria-selected="true"], button[data-baseweb="tab"][aria-selected="true"] {
+    /* 🎯 الزر المختار لكل برنامج (Active Button) */
+    div[data-testid="stRadio"] label[data-checked="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
         color: #ffffff !important;
-        border: 2px solid #38bdf8 !important;
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.7), 0 4px 10px rgba(0, 0, 0, 0.5) !important;
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 15px rgba(56, 189, 248, 0.7) !important;
         transform: scale(1.03) !important;
-    }
-
-    /* إخفاء الخط الأفق السفي الافتراضي المموه لـ Streamlit */
-    [data-baseweb="tab-highlight"], div[data-baseweb="tab-border"] {
-        display: none !important;
-        height: 0px !important;
     }
 
     /* 📊 كروت الإحصائيات */
@@ -134,7 +121,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر وشعار الفرع (في المنتصف)
+# 2. الهيدر وشعار الفرع
 logo_path = "logo.png"
 if os.path.exists(logo_path):
     c_left, c_mid, c_right = st.columns([1, 4, 1])
@@ -165,7 +152,6 @@ st.divider()
 
 # 3. القائمة الجانبية (Sidebar)
 st.sidebar.header("📁 إدارة البيانات")
-
 uploaded_file = st.sidebar.file_uploader(
     "تحميل ملف الإكسيل (Excel)", type=["xlsx", "xls"]
 )
@@ -202,9 +188,9 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية (عنوان موسط + أزرار تبويب بارزة جداً)
+# 6. البرامج التدريبية كـ أزرار منفصلة وبارزة جداً
 st.markdown(
-    '<div class="section-title-center">🎯 البرامج التدريبية</div>',
+    '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
 )
 
@@ -216,110 +202,109 @@ program_options = [
     "أساسيات التوجيه الفني",
 ]
 
-tabs = st.tabs(program_options)
+# استخدام st.radio وتنسيقه كـ أزرار مستقلة عبر CSS
+selected_program = st.radio(
+    label="اختر البرنامج",
+    options=program_options,
+    horizontal=True,
+    label_visibility="collapsed",
+)
 
-for tab, program_name in zip(tabs, program_options):
-    with tab:
-        filtered_df = df.copy()
+# 7. فلترة البيانات بناءً على البرنامج المختار
+filtered_df = df.copy()
 
-        if program_name != "الكل" and "البرنامج" in filtered_df.columns:
-            filtered_df = filtered_df[
-                filtered_df["البرنامج"] == program_name
-            ]
+if selected_program != "الكل" and "البرنامج" in filtered_df.columns:
+    filtered_df = filtered_df[filtered_df["البرنامج"] == selected_program]
 
-        if selected_date and "وقت أداء الاختبار" in filtered_df.columns:
-            date_str = str(selected_date)
-            filtered_df = filtered_df[
-                filtered_df["وقت أداء الاختبار"]
-                .astype(str)
-                .str.startswith(date_str)
-            ]
+if selected_date and "وقت أداء الاختبار" in filtered_df.columns:
+    date_str = str(selected_date)
+    filtered_df = filtered_df[
+        filtered_df["وقت أداء الاختبار"].astype(str).str.startswith(date_str)
+    ]
 
-        if search_query:
-            cond_code = (
-                filtered_df["كود المعلم"].str.contains(
-                    search_query, case=False, na=False
-                )
-                if "كود المعلم" in filtered_df.columns
-                else False
-            )
-            cond_id = (
-                filtered_df["الرقم القومي"].str.contains(
-                    search_query, case=False, na=False
-                )
-                if "الرقم القومي" in filtered_df.columns
-                else False
-            )
-            filtered_df = filtered_df[cond_code | cond_id]
-
-        # 7. الإحصائيات العامة (عنوان موسط)
-        st.markdown(
-            '<div class="section-title-center">📊 الإحصائيات العامة</div>',
-            unsafe_allow_html=True,
+if search_query:
+    cond_code = (
+        filtered_df["كود المعلم"].str.contains(
+            search_query, case=False, na=False
         )
-
-        total = len(filtered_df)
-        reserved = (
-            len(
-                filtered_df[
-                    filtered_df["الحالة"].isin(
-                        ["محجوز", "حجز اختبار", "لم يختبر"]
-                    )
-                ]
-            )
-            if "الحالة" in filtered_df.columns
-            else 0
+        if "كود المعلم" in filtered_df.columns
+        else False
+    )
+    cond_id = (
+        filtered_df["الرقم القومي"].str.contains(
+            search_query, case=False, na=False
         )
-        passed = (
-            len(filtered_df[filtered_df["الحالة"] == "اجتاز"])
-            if "الحالة" in filtered_df.columns
-            else 0
-        )
-        failed = (
-            len(filtered_df[filtered_df["الحالة"] == "راسب"])
-            if "الحالة" in filtered_df.columns
-            else 0
-        )
-        pending = (
-            len(filtered_df[filtered_df["الحالة"] == "قيد الاختبار"])
-            if "الحالة" in filtered_df.columns
-            else 0
-        )
+        if "الرقم القومي" in filtered_df.columns
+        else False
+    )
+    filtered_df = filtered_df[cond_code | cond_id]
 
-        c1, c2, c3, c4, c5 = st.columns(5)
-        c1.metric("📊 إجمالي الممتحنين", total)
-        c2.metric("🎟️ حجز اختبار", reserved)
-        c3.metric("✅ ناجحين", passed)
-        c4.metric("❌ راسبين", failed)
-        c5.metric("⏳ قيد الاختبار", pending)
+# 8. الإحصائيات العامة (في المنتصف)
+st.markdown(
+    '<div class="section-title-center">📊 الإحصائيات العامة</div>',
+    unsafe_allow_html=True,
+)
 
-        st.divider()
-
-        # 8. جدول بيانات المعلمين (عنوان موسط)
-        st.markdown(
-            '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
-            unsafe_allow_html=True,
-        )
-
-        columns_to_show = [
-            col
-            for col in [
-                "كود المعلم",
-                "اسم المعلم",
-                "الرقم القومي",
-                "البرنامج",
-                "الحالة",
-                "وقت أداء الاختبار",
-                "الإجراء",
-            ]
-            if col in filtered_df.columns
+total = len(filtered_df)
+reserved = (
+    len(
+        filtered_df[
+            filtered_df["الحالة"].isin(["محجوز", "حجز اختبار", "لم يختبر"])
         ]
+    )
+    if "الحالة" in filtered_df.columns
+    else 0
+)
+passed = (
+    len(filtered_df[filtered_df["الحالة"] == "اجتاز"])
+    if "الحالة" in filtered_df.columns
+    else 0
+)
+failed = (
+    len(filtered_df[filtered_df["الحالة"] == "راسب"])
+    if "الحالة" in filtered_df.columns
+    else 0
+)
+pending = (
+    len(filtered_df[filtered_df["الحالة"] == "قيد الاختبار"])
+    if "الحالة" in filtered_df.columns
+    else 0
+)
 
-        if not filtered_df.empty:
-            st.dataframe(
-                filtered_df[columns_to_show],
-                use_container_width=True,
-                hide_index=True,
-            )
-        else:
-            st.info("لا توجد نتائج تطابق خيارات البحث والتصفية لهذا البرنامج.")
+c1, c2, c3, c4, c5 = st.columns(5)
+c1.metric("📊 إجمالي الممتحنين", total)
+c2.metric("🎟️ حجز اختبار", reserved)
+c3.metric("✅ ناجحين", passed)
+c4.metric("❌ راسبين", failed)
+c5.metric("⏳ قيد الاختبار", pending)
+
+st.divider()
+
+# 9. جدول بيانات المعلمين (في المنتصف)
+st.markdown(
+    '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
+    unsafe_allow_html=True,
+)
+
+columns_to_show = [
+    col
+    for col in [
+        "كود المعلم",
+        "اسم المعلم",
+        "الرقم القومي",
+        "البرنامج",
+        "الحالة",
+        "وقت أداء الاختبار",
+        "الإجراء",
+    ]
+    if col in filtered_df.columns
+]
+
+if not filtered_df.empty:
+    st.dataframe(
+        filtered_df[columns_to_show],
+        use_container_width=True,
+        hide_index=True,
+    )
+else:
+    st.info("لا توجد نتائج تطابق خيارات البحث والتصفية لهذا البرنامج.")
