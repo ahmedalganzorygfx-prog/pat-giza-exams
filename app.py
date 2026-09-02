@@ -13,13 +13,25 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وتوسيط العناصر
+# 🎨 CSS لتنسيق التطبيق ومحاذاة الجدول والعناصر من اليمين
 st.markdown(
     """
     <style>
-    /* محاذاة RTL */
+    /* محاذاة RTL عامة */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
+    }
+
+    /* 🎯 محاذاة عناوين وأجسام جدول البيانات من اليمين للجميع */
+    [data-testid="stDataFrame"] div[role="columnheader"] {
+        text-align: right !important;
+        justify-content: flex-start !important;
+        direction: rtl !important;
+    }
+
+    [data-testid="stDataFrame"] div[role="gridcell"] {
+        text-align: right !important;
+        direction: rtl !important;
     }
 
     /* 🎯 محاذاة وتوسيط عناصر السايدبار بالكامل */
@@ -418,7 +430,7 @@ c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 🍩 الرسم البياني الدائري التفاعلي + خريطة برامج مخصصة واضحة 100%
+# 🍩 الرسم البياني الدائري التفاعلي + خريطة برامج مخصصة
 if "البرنامج" in df.columns and not df.empty:
     st.markdown(
         '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج التدريبي</div>',
@@ -428,7 +440,6 @@ if "البرنامج" in df.columns and not df.empty:
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
-    # ألوان مميزة لكل برنامج
     colors = [
         "#38bdf8",
         "#f59e0b",
@@ -439,7 +450,6 @@ if "البرنامج" in df.columns and not df.empty:
         "#14b8a6",
     ]
 
-    # رسم بياني بدون Legend مدمج لتفادي مشاكل الخطوط العربية
     pie_chart = (
         alt.Chart(prog_counts)
         .mark_arc(innerRadius=65, outerRadius=125)
@@ -465,7 +475,6 @@ if "البرنامج" in df.columns and not df.empty:
 
     st.altair_chart(pie_chart, use_container_width=True)
 
-    # 🎨 بناء خريطة البرامج بـ HTML نقي
     legend_items = []
     for idx, row in prog_counts.iterrows():
         color = colors[idx % len(colors)]
@@ -478,7 +487,6 @@ if "البرنامج" in df.columns and not df.empty:
         legend_items.append(item)
 
     legend_html = f'<div class="custom-legend-container">{"".join(legend_items)}</div>'
-
     st.markdown(legend_html, unsafe_allow_html=True)
 
 st.divider()
@@ -489,19 +497,18 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-columns_to_show = [
-    col
-    for col in [
-        "كود المعلم",
-        "اسم المعلم",
-        "الرقم القومي",
-        "البرنامج",
-        "الحالة",
-        "وقت أداء الاختبار",
-        "الإجراء",
-    ]
-    if col in filtered_df.columns
+# 🎯 تحديد ترتيب الأعمدة الصريح من اليمين إلى اليسار
+desired_order = [
+    "كود المعلم",
+    "اسم المعلم",
+    "الرقم القومي",
+    "البرنامج",
+    "الحالة",
+    "وقت أداء الاختبار",
 ]
+
+# التأكد من وجود العمود في الملف قبل إضافته للترتيب
+columns_to_show = [col for col in desired_order if col in filtered_df.columns]
 
 if not filtered_df.empty:
     st.dataframe(
