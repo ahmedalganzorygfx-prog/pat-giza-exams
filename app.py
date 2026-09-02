@@ -1,8 +1,8 @@
 import base64
 import glob
 import os
-import matplotlib.pyplot as plt
 import pandas as pd
+import plotly.express as px
 import streamlit as st
 
 # 1. إعدادات الصفحة
@@ -401,36 +401,53 @@ c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 📊 الرسم البياني لعدد الممتحنين لكل برنامج تدريبي
+# 📊 الرسم البياني التفاعلي لعدد الممتحنين لكل برنامج تدريبي
 if "البرنامج" in df.columns:
-    st.markdown("<br>", unsafe_allow_html=True)
-    prog_counts = df["البرنامج"].value_counts()
-
-    fig, ax = plt.subplots(figsize=(10, 4.5))
-    bars = ax.bar(
-        prog_counts.index, prog_counts.values, color="black", width=0.5
+    st.markdown(
+        '<div class="section-title-center">📈 عدد الممتحنين حسب البرنامج التدريبي</div>',
+        unsafe_allow_html=True,
     )
 
-    ax.set_title("📈 عدد الممتحنين لكل برنامج تدريبي", fontsize=14, weight="bold")
-    ax.set_ylabel("عدد الممتحنين", fontsize=11, weight="bold")
-    plt.xticks(rotation=15, ha="right", fontsize=10, weight="bold")
-    ax.grid(axis="y", linestyle="--", alpha=0.5)
+    prog_counts = df["البرنامج"].value_counts().reset_index()
+    prog_counts.columns = ["البرنامج التدريبي", "عدد الممتحنين"]
 
-    # وضع الأرقام فوق الأعمدة
-    for bar in bars:
-        height = bar.get_height()
-        ax.annotate(
-            f"{int(height)}",
-            xy=(bar.get_x() + bar.get_width() / 2, height),
-            xytext=(0, 3),  # 3 points vertical offset
-            textcoords="offset points",
-            ha="center",
-            va="bottom",
-            fontsize=10,
-            weight="bold",
-        )
+    # إنشاء رسم بياني تفاعلي أنيق بـ Plotly
+    fig = px.bar(
+        prog_counts,
+        x="البرنامج التدريبي",
+        y="عدد الممتحنين",
+        text="عدد الممتحنين",
+        color_discrete_sequence=["#38bdf8"],
+    )
 
-    st.pyplot(fig)
+    fig.update_traces(
+        textposition="outside",
+        marker_line_color="#0284c7",
+        marker_line_width=1.5,
+        opacity=0.9,
+    )
+
+    fig.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font=dict(color="#ffffff", size=13, family="Segoe UI, Tahoma"),
+        xaxis=dict(
+            title="",
+            tickangle=-15,
+            showgrid=False,
+            zeroline=False,
+        ),
+        yaxis=dict(
+            title="عدد الممتحنين",
+            showgrid=True,
+            gridcolor="#334155",
+            zeroline=False,
+        ),
+        margin=dict(l=20, r=20, t=30, b=80),
+        height=420,
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
