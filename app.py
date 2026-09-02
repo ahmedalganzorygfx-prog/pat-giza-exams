@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتصميم أزرار التصفية لتكون منفصلة وبارزة جداً لكل برنامج
+# 🎨 CSS لتوسيط الشعار، العناوين، والأزرار المخصصة
 st.markdown(
     """
     <style>
@@ -24,7 +24,34 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🎯 توسيط العناوين */
+    /* 🎯 توسيط قسم الهيدر (الشعار والعناوين) */
+    .header-container {
+        text-align: center;
+        padding: 10px 0px 20px 0px;
+    }
+    
+    .logo-img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 15px;
+        width: 120px;
+    }
+
+    .main-title {
+        color: #ffffff;
+        font-size: 30px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+
+    .sub-title {
+        color: #38bdf8;
+        font-size: 22px;
+        font-weight: 700;
+    }
+
+    /* 🎯 توسيط العناوين الفرعية */
     .section-title-center {
         text-align: center !important;
         font-size: 24px !important;
@@ -34,26 +61,10 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    .header-container {
-        text-align: center;
-        padding: 10px 0px 15px 0px;
-    }
-    .main-title {
-        color: #ffffff;
-        font-size: 28px;
-        font-weight: 800;
-        margin-bottom: 5px;
-    }
-    .sub-title {
-        color: #38bdf8;
-        font-size: 22px;
-        font-weight: 700;
-    }
-
-    /* 🔘 تحويل st.radio إلى أزرار منفصلة وبارزة تماماً (Buttons) */
+    /* 🔘 أزرار التصفية المنفصلة والبارزة */
     div[data-testid="stRadio"] > div {
         display: flex !important;
-        flex-direction: row-reverse !important; /* اتجاه من اليمين لليسار */
+        flex-direction: row-reverse !important;
         justify-content: center !important;
         flex-wrap: wrap !important;
         gap: 12px !important;
@@ -72,12 +83,10 @@ st.markdown(
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
     }
 
-    /* إخفاء الدائرة الافتراضية لـ Radio */
     div[data-testid="stRadio"] label > div:first-child {
         display: none !important;
     }
 
-    /* 🖱️ عند مرور الماوس على الزر */
     div[data-testid="stRadio"] label:hover {
         background: #334155 !important;
         border-color: #38bdf8 !important;
@@ -85,7 +94,6 @@ st.markdown(
         transform: translateY(-2px) !important;
     }
 
-    /* 🎯 الزر المختار لكل برنامج (Active Button) */
     div[data-testid="stRadio"] label[data-checked="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
         color: #ffffff !important;
@@ -121,32 +129,25 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر وشعار الفرع
+# 2. الهيدر وشعار الفرع (اللوجو أعلى العنوان الرئيسي مباشرة)
 logo_path = "logo.png"
+
+st.markdown('<div class="header-container">', unsafe_allow_html=True)
+
 if os.path.exists(logo_path):
-    c_left, c_mid, c_right = st.columns([1, 4, 1])
+    # عرض اللوجو في منتصف الشاشة أعلى العنوان
+    c_left, c_mid, c_right = st.columns([2, 1, 2])
     with c_mid:
-        st.markdown(
-            """
-            <div class="header-container">
-                <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
-                <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with c_right:
-        st.image(logo_path, width=110)
-else:
-    st.markdown(
-        """
-        <div class="header-container">
-            <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
-            <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+        st.image(logo_path, use_container_width=True)
+
+st.markdown(
+    """
+        <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+        <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 st.divider()
 
@@ -188,7 +189,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية كـ أزرار منفصلة وبارزة جداً
+# 6. البرامج التدريبية (أزرار منفصلة وبارزة)
 st.markdown(
     '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
@@ -202,7 +203,6 @@ program_options = [
     "أساسيات التوجيه الفني",
 ]
 
-# استخدام st.radio وتنسيقه كـ أزرار مستقلة عبر CSS
 selected_program = st.radio(
     label="اختر البرنامج",
     options=program_options,
@@ -210,7 +210,7 @@ selected_program = st.radio(
     label_visibility="collapsed",
 )
 
-# 7. فلترة البيانات بناءً على البرنامج المختار
+# 7. فلترة البيانات
 filtered_df = df.copy()
 
 if selected_program != "الكل" and "البرنامج" in filtered_df.columns:
@@ -239,7 +239,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 8. الإحصائيات العامة (في المنتصف)
+# 8. الإحصائيات العامة
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
@@ -280,7 +280,7 @@ c5.metric("⏳ قيد الاختبار", pending)
 
 st.divider()
 
-# 9. جدول بيانات المعلمين (في المنتصف)
+# 9. جدول البيانات
 st.markdown(
     '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
     unsafe_allow_html=True,
