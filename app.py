@@ -12,7 +12,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وإخفاء المحتوى تماماً عند تقليص القائمة الجانبية
+# 🎨 CSS لتنسيق التطبيق وتنسيق القائمة الجانبية
 st.markdown(
     """
     <style>
@@ -39,7 +39,7 @@ st.markdown(
         padding: 12px 10px;
         text-align: center;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        margin-top: 10px;
+        margin-top: 15px;
     }
 
     .sidebar-footer-card p {
@@ -96,47 +96,6 @@ st.markdown(
         color: #ffffff !important;
         margin-top: 20px !important;
         margin-bottom: 15px !important;
-    }
-
-    /* 🔘 أزرار التصفية - مرتبة من اليمين إلى اليسار */
-    div[data-testid="stRadio"] > div {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-        flex-wrap: wrap !important;
-        gap: 12px !important;
-    }
-
-    div[data-testid="stRadio"] label {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-        color: #e2e8f0 !important;
-        border: 2px solid #334155 !important;
-        padding: 10px 20px !important;
-        border-radius: 12px !important;
-        font-weight: 800 !important;
-        font-size: 15px !important;
-        cursor: pointer !important;
-        transition: all 0.25s ease-in-out !important;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
-    }
-
-    div[data-testid="stRadio"] label > div:first-child {
-        display: none !important;
-    }
-
-    div[data-testid="stRadio"] label:hover {
-        background: #334155 !important;
-        border-color: #38bdf8 !important;
-        color: #ffffff !important;
-        transform: translateY(-2px) !important;
-    }
-
-    div[data-testid="stRadio"] label[data-checked="true"] {
-        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-        color: #ffffff !important;
-        border-color: #38bdf8 !important;
-        box-shadow: 0 0 15px rgba(56, 189, 248, 0.7) !important;
-        transform: scale(1.03) !important;
     }
 
     /* 📊 توسيط كروت الإحصائيات بالكامل */
@@ -236,8 +195,24 @@ header_html = f"""
 
 st.markdown(header_html, unsafe_allow_html=True)
 
-# 3. القائمة الجانبية (Sidebar)
-st.sidebar.header("📁 لوحة التحكم")
+# 3. القائمة الجانبية (Sidebar) - وضع تصفية البرامج بالناحية اليمنى
+st.sidebar.header("🎯 البرامج التدريبية")
+
+program_options = [
+    "الكل",
+    "تطبيقات تربوية للمعلم المساعد",
+    "مدير ووكيل ادارة مدرسية",
+    "مدير ووكيل ادارة تعليمية",
+    "أساسيات التوجيه الفني",
+]
+
+selected_program = st.sidebar.selectbox(
+    "اختر البرنامج التدريبي:",
+    options=program_options,
+    index=0,
+)
+
+st.sidebar.divider()
 
 # عرض الحقوق بداخل السايدبار
 st.sidebar.markdown(
@@ -287,28 +262,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية
-st.markdown(
-    '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
-    unsafe_allow_html=True,
-)
-
-program_options = [
-    "الكل",
-    "تطبيقات تربوية للمعلم المساعد",
-    "مدير ووكيل ادارة مدرسية",
-    "مدير ووكيل ادارة تعليمية",
-    "أساسيات التوجيه الفني",
-]
-
-selected_program = st.radio(
-    label="اختر البرنامج",
-    options=program_options,
-    horizontal=True,
-    label_visibility="collapsed",
-)
-
-# 7. فلترة البيانات
+# 6. فلترة البيانات
 filtered_df = df.copy()
 
 if selected_program != "الكل" and "البرنامج" in filtered_df.columns:
@@ -337,7 +291,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 8. الإحصائيات العامة
+# 7. الإحصائيات العامة
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
@@ -378,7 +332,7 @@ c5.metric("⏳ قيد الاختبار", pending)
 
 st.divider()
 
-# 9. جدول بيانات المعلمين
+# 8. جدول بيانات المعلمين
 st.markdown(
     '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
     unsafe_allow_html=True,
