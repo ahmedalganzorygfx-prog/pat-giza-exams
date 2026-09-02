@@ -217,6 +217,37 @@ st.markdown(
         width: 100% !important;
         text-align: center !important;
     }
+
+    /* 🎨 تصميم خريطة البرامج المخصصة (Custom Legend) */
+    .custom-legend-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 15px;
+        direction: rtl;
+    }
+
+    .custom-legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        padding: 8px 16px;
+        border-radius: 20px;
+        color: #ffffff;
+        font-weight: 700;
+        font-size: 14px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .legend-color-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        display: inline-block;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -262,7 +293,7 @@ header_html = f"""
 
 st.markdown(header_html, unsafe_allow_html=True)
 
-# 3. القائمة الجانبية (Sidebar) - عناصر البرامج التفاعلية في المنتصف
+# 3. القائمة الجانبية (Sidebar)
 st.sidebar.markdown(
     "<h3 style='text-align: center;'>🎯 البرامج التدريبية</h3>",
     unsafe_allow_html=True,
@@ -296,7 +327,7 @@ st.sidebar.markdown(
 )
 
 
-# 4. البحث التلقائي عن ملف الإكسيل بداخل المشروع وقراءته
+# 4. قراءة البيانات
 @st.cache_data
 def load_data_from_project():
     excel_files = glob.glob("*.xlsx") + glob.glob("*.xls")
@@ -318,7 +349,7 @@ if err_msg:
     st.error(f"⚠️ {err_msg}")
     st.stop()
 
-# 5. شريط البحث والتاريخ العلوي
+# 5. شريط البحث والتاريخ
 col_search, col_date, col_reset = st.columns([2, 2, 1])
 
 with col_search:
@@ -401,7 +432,7 @@ c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 🍩 الرسم البياني الدائري التفاعلي مع خريطة برامج من اليمين إلى اليسار
+# 🍩 الرسم البياني الدائري التفاعلي + خريطة برامج مخصصة واضحة 100%
 if "البرنامج" in df.columns and not df.empty:
     st.markdown(
         '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج التدريبي</div>',
@@ -411,38 +442,58 @@ if "البرنامج" in df.columns and not df.empty:
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
-    # إنشاء رسم بياني دائري
+    # ألوان مميزة لكل برنامج
+    colors = [
+        "#38bdf8",
+        "#f59e0b",
+        "#10b981",
+        "#ec4899",
+        "#8b5cf6",
+        "#6366f1",
+        "#14b8a6",
+    ]
+
+    # رسم بياني بدون Legend مدمج لتفادي مشاكل الخطوط العربية
     pie_chart = (
         alt.Chart(prog_counts)
-        .mark_arc(innerRadius=60, outerRadius=120)
+        .mark_arc(innerRadius=65, outerRadius=125)
         .encode(
             theta=alt.Theta(field="عدد_الممتحنين", type="quantitative"),
             color=alt.Color(
                 field="البرنامج_التدريبي",
                 type="nominal",
-                scale=alt.Scale(scheme="category10"),
-                legend=alt.Legend(
-                    title=None,
-                    orient="bottom",
-                    direction="horizontal",
-                    columns=2,  # ترتيب خريطة البرامج في أعمدة لتسهيل القراءة RTL
-                    labelFontSize=13,
-                    labelColor="white",
-                    symbolSize=100,
-                    symbolType="circle",
-                    labelLimit=300,
+                scale=alt.Scale(
+                    domain=prog_counts["البرنامج_التدريبي"].tolist(),
+                    range=colors[: len(prog_counts)],
                 ),
+                legend=None,  # إخفاء الخريطة المدمجة المتشوهة
             ),
             tooltip=[
                 alt.Tooltip("البرنامج_التدريبي", title="البرنامج"),
                 alt.Tooltip("عدد_الممتحنين", title="عدد الممتحنين"),
             ],
         )
-        .properties(height=420)
+        .properties(height=320)
         .configure_view(strokeWidth=0)
     )
 
     st.altair_chart(pie_chart, use_container_width=True)
+
+    # 🎨 إنشاء خريطة البرامج بـ HTML مقروءة وواضحة من اليمين إلى اليسار
+    legend_html = '<div class="custom-legend-container">'
+    for idx, row in prog_counts.iterrows():
+        color = colors[idx % len(colors)]
+        label = row["البرنامج_التدريبي"]
+        count = row["عدد_الممتحنين"]
+        legend_html += f"""
+        <div class="custom-legend-item">
+            <span class="legend-color-dot" style="background-color: {color};"></span>
+            <span>{label} ({count})</span>
+        </div>
+        """
+    legend_html += "</div>"
+
+    st.markdown(legend_html, unsafe_allow_html=True)
 
 st.divider()
 
