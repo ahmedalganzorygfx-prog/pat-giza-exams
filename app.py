@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وتوسيط عناصر السايدبار بالكامل
+# 🎨 CSS لتنسيق التطبيق وتوسيط العناصر
 st.markdown(
     """
     <style>
@@ -95,28 +95,6 @@ st.markdown(
         color: #ffffff !important;
         border-color: #38bdf8 !important;
         box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
-    }
-
-    /* 💡 بطاقة الحقوق المخصصة في السايدبار */
-    .sidebar-footer-card {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border: 1px solid #38bdf8;
-        border-radius: 12px;
-        padding: 12px 10px;
-        text-align: center;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-        margin-top: 20px;
-        width: 100%;
-    }
-
-    .sidebar-footer-card p {
-        color: #ffffff !important;
-        font-weight: 800 !important;
-        font-size: 14px !important;
-        line-height: 1.6 !important;
-        margin: 0 !important;
-        white-space: normal !important;
-        word-wrap: break-word !important;
     }
 
     /* 🎯 بطاقة الهيدر الملونة والأنيقة */
@@ -248,6 +226,26 @@ st.markdown(
         border-radius: 50%;
         display: inline-block;
     }
+
+    /* 💡 بطاقة الحقوق في أسفل الصفحة (Footer) */
+    .page-footer-card {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 2px solid #38bdf8;
+        border-radius: 16px;
+        padding: 15px 25px;
+        text-align: center;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+        margin: 40px auto 20px auto;
+        max-width: 450px;
+    }
+
+    .page-footer-card p {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 16px !important;
+        line-height: 1.6 !important;
+        margin: 0 !important;
+    }
     </style>
 """,
     unsafe_allow_html=True,
@@ -312,18 +310,6 @@ selected_program = st.sidebar.radio(
     options=program_options,
     index=0,
     label_visibility="collapsed",
-)
-
-st.sidebar.divider()
-
-# عرض الحقوق بداخل السايدبار
-st.sidebar.markdown(
-    """
-    <div class="sidebar-footer-card">
-        <p>✨ تصميم وتنفيذ:<br><b>أحمد الجنزوري - مدير الفرع</b></p>
-    </div>
-    """,
-    unsafe_allow_html=True,
 )
 
 
@@ -466,7 +452,7 @@ if "البرنامج" in df.columns and not df.empty:
                     domain=prog_counts["البرنامج_التدريبي"].tolist(),
                     range=colors[: len(prog_counts)],
                 ),
-                legend=None,  # إخفاء الخريطة المدمجة المتشوهة
+                legend=None,
             ),
             tooltip=[
                 alt.Tooltip("البرنامج_التدريبي", title="البرنامج"),
@@ -479,7 +465,7 @@ if "البرنامج" in df.columns and not df.empty:
 
     st.altair_chart(pie_chart, use_container_width=True)
 
-    # 🎨 بناء خريطة البرامج بـ HTML نقي وتوافقي
+    # 🎨 بناء خريطة البرامج بـ HTML نقي
     legend_items = []
     for idx, row in prog_counts.iterrows():
         color = colors[idx % len(colors)]
@@ -525,3 +511,13 @@ if not filtered_df.empty:
     )
 else:
     st.info("لا توجد نتائج تطابق خيارات البحث والتصفية لهذا البرنامج.")
+
+# 9. بطاقة الحقوق في أسفل الصفحة
+st.markdown(
+    """
+    <div class="page-footer-card">
+        <p>✨ تصميم وتنفيذ: <b>أحمد الجنزوري - مدير الفرع</b></p>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
