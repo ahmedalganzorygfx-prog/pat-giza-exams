@@ -479,19 +479,19 @@ if "البرنامج" in df.columns and not df.empty:
 
     st.altair_chart(pie_chart, use_container_width=True)
 
-    # 🎨 إنشاء خريطة البرامج بـ HTML مقروءة وواضحة من اليمين إلى اليسار
-    legend_html = '<div class="custom-legend-container">'
+    # 🎨 بناء خريطة البرامج بـ HTML نقي وتوافقي
+    legend_items = []
     for idx, row in prog_counts.iterrows():
         color = colors[idx % len(colors)]
         label = row["البرنامج_التدريبي"]
         count = row["عدد_الممتحنين"]
-        legend_html += f"""
-        <div class="custom-legend-item">
+        item = f"""<div class="custom-legend-item">
             <span class="legend-color-dot" style="background-color: {color};"></span>
             <span>{label} ({count})</span>
-        </div>
-        """
-    legend_html += "</div>"
+        </div>"""
+        legend_items.append(item)
+
+    legend_html = f'<div class="custom-legend-container">{"".join(legend_items)}</div>'
 
     st.markdown(legend_html, unsafe_allow_html=True)
 
