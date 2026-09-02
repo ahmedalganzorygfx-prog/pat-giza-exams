@@ -1,8 +1,8 @@
 import base64
 import glob
 import os
+import altair as alt
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 
 # 1. إعدادات الصفحة
@@ -401,7 +401,7 @@ c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 📊 الرسم البياني التفاعلي لعدد الممتحنين لكل برنامج تدريبي
+# 📊 الرسم البياني التفاعلي لعدد الممتحنين لكل برنامج تدريبي باستعمال Altair المدمجة
 if "البرنامج" in df.columns:
     st.markdown(
         '<div class="section-title-center">📈 عدد الممتحنين حسب البرنامج التدريبي</div>',
@@ -409,45 +409,40 @@ if "البرنامج" in df.columns:
     )
 
     prog_counts = df["البرنامج"].value_counts().reset_index()
-    prog_counts.columns = ["البرنامج التدريبي", "عدد الممتحنين"]
+    prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
-    # إنشاء رسم بياني تفاعلي أنيق بـ Plotly
-    fig = px.bar(
-        prog_counts,
-        x="البرنامج التدريبي",
-        y="عدد الممتحنين",
-        text="عدد الممتحنين",
-        color_discrete_sequence=["#38bdf8"],
+    # إنشاء رسم بياني تفاعلي باستخدام Altair (مدمج افتراضياً مع Streamlit)
+    bars = (
+        alt.Chart(prog_counts)
+        .mark_bar(color="#38bdf8", cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
+        .encode(
+            x=alt.X(
+                "البرنامج_التدريبي:N",
+                title=None,
+                sort="-y",
+                axis=alt.Axis(labelAngle=-15, labelFontSize=12),
+            ),
+            y=alt.Y(
+                "عدد_الممتحنين:Q",
+                title="عدد الممتحنين",
+                axis=alt.Axis(grid=True),
+            ),
+            tooltip=["البرنامج_التدريبي", "عدد_الممتحنين"],
+        )
     )
 
-    fig.update_traces(
-        textposition="outside",
-        marker_line_color="#0284c7",
-        marker_line_width=1.5,
-        opacity=0.9,
+    text = bars.mark_text(
+        align="center", baseline="bottom", dy=-5, color="white", fontSize=13
+    ).encode(text="عدد_الممتحنين:Q")
+
+    chart = (
+        (bars + text)
+        .properties(height=380)
+        .configure_view(strokeWidth=0)
+        .interactive()
     )
 
-    fig.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#ffffff", size=13, family="Segoe UI, Tahoma"),
-        xaxis=dict(
-            title="",
-            tickangle=-15,
-            showgrid=False,
-            zeroline=False,
-        ),
-        yaxis=dict(
-            title="عدد الممتحنين",
-            showgrid=True,
-            gridcolor="#334155",
-            zeroline=False,
-        ),
-        margin=dict(l=20, r=20, t=30, b=80),
-        height=420,
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
+    st.altair_chart(chart, use_container_width=True)
 
 st.divider()
 
