@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق وتوسيط اللوجو والعناوين بداخل كارت ملون أنيق
+# 🎨 CSS لتنسيق وتوسيط اللوجو والعناوين وعكس أزرار التصفية من اليمين لليسار
 st.markdown(
     """
     <style>
@@ -40,7 +40,6 @@ st.markdown(
         justify-content: center;
     }
 
-    /* 🔍 تكبير حجم اللوجو (يمكن تعديل 200px للتكبير أو التصغير) */
     .header-logo {
         width: 200px;
         height: auto;
@@ -72,10 +71,10 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 🔘 أزرار التصفية المنفصلة والبارزة */
+    /* 🔘 أزرار التصفية - مرتبة من اليمين إلى اليسار (row بدلاً من row-reverse) */
     div[data-testid="stRadio"] > div {
         display: flex !important;
-        flex-direction: row-reverse !important;
+        flex-direction: row !important;
         justify-content: center !important;
         flex-wrap: wrap !important;
         gap: 12px !important;
@@ -200,7 +199,6 @@ for file in possible_files:
 
 logo_b64 = get_image_base64(found_logo) if found_logo else ""
 
-# بناء كارت الهيدر الملون
 header_html = f"""
 <div class="header-card">
     {"<img src='" + logo_b64 + "' class='header-logo' />" if logo_b64 else ""}
@@ -249,7 +247,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية
+# 6. البرامج التدريبية (تبدأ بالـ "الكل" من اليمين)
 st.markdown(
     '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
