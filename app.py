@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق وتوسيط اللوجو والعناوين وعكس أزرار التصفية من اليمين لليسار
+# 🎨 CSS لتنسيق التطبيق وإصلاح مشكلة الحروف الرأسية عند تقليص القائمة الجانبية
 st.markdown(
     """
     <style>
@@ -23,6 +23,17 @@ st.markdown(
     [data-testid="stSidebar"] {
         direction: rtl;
         text-align: right;
+    }
+
+    /* 🛠️ حل مشكلة الحروف عند تقليص/إخفاء القائمة الجانبية */
+    [data-testid="stSidebar"][aria-expanded="false"] {
+        margin-left: 0rem !important;
+    }
+    
+    [data-testid="stSidebar"] * {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
 
     /* 🎯 بطاقة الهيدر الملونة والأنيقة */
@@ -71,7 +82,7 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 🔘 أزرار التصفية - مرتبة من اليمين إلى اليسار (row بدلاً من row-reverse) */
+    /* 🔘 أزرار التصفية - مرتبة من اليمين إلى اليسار */
     div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: row !important;
@@ -247,7 +258,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية (تبدأ بالـ "الكل" من اليمين)
+# 6. البرامج التدريبية
 st.markdown(
     '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
