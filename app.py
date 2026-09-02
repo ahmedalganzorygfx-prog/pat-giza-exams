@@ -1,3 +1,4 @@
+import base64
 import os
 import pandas as pd
 import streamlit as st
@@ -10,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتوسيط كافة العناصر والبيانات والكروت والأزرار بدقة
+# 🎨 CSS لتنسيق وتوسيط اللوجو والعناوين داخل كارت ملون أنيق
 st.markdown(
     """
     <style>
@@ -24,23 +25,39 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🎯 توسيط قسم الهيدر (الشعار والعناوين) */
-    .header-container {
+    /* 🎯 بطاقة الهيدر الملونة والأنيقة */
+    .header-card {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border: 2px solid #334155;
+        border-radius: 20px;
+        padding: 25px 20px;
         text-align: center;
-        padding: 5px 0px 15px 0px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.15);
+        margin-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header-logo {
+        width: 130px;
+        height: auto;
+        margin-bottom: 15px;
+        filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.5));
     }
 
     .main-title {
         color: #ffffff;
-        font-size: 30px;
+        font-size: 28px;
         font-weight: 800;
-        margin-top: 10px;
         margin-bottom: 8px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     .sub-title {
         color: #38bdf8;
-        font-size: 22px;
+        font-size: 20px;
         font-weight: 700;
     }
 
@@ -95,7 +112,7 @@ st.markdown(
         transform: scale(1.03) !important;
     }
 
-    /* 📊 توسيط كروت الإحصائيات بالكامل (النص والرقم) */
+    /* 📊 توسيط كروت الإحصائيات بالكامل */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -152,7 +169,19 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2. البحث المرن عن اللوجو وعرضه أعلى العنوان مباشرة
+
+# دالة تحويل الصورة إلى Base64 لعرضها بداخل HTML بدقة
+def get_image_base64(path):
+    if os.path.exists(path):
+        with open(path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read()).decode()
+        ext = path.split(".")[-1].lower()
+        mime_type = "image/png" if ext == "png" else f"image/{ext}"
+        return f"data:{mime_type};base64,{encoded_string}"
+    return None
+
+
+# 2. البحث عن اللوجو وعرضه داخل كارت أنيق ملون
 possible_files = [
     "logo.png",
     "logo.jpg",
@@ -168,25 +197,18 @@ for file in possible_files:
         found_logo = file
         break
 
-st.markdown('<div class="header-container">', unsafe_allow_html=True)
+logo_b64 = get_image_base64(found_logo) if found_logo else ""
 
-if found_logo:
-    c_left, c_mid, c_right = st.columns([2, 1, 2])
-    with c_mid:
-        st.image(found_logo, use_container_width=True)
-else:
-    st.info("💡 لتنفيذ الشعار: ضع صورة الشعار باسم logo.png داخل مجلد المشروع.")
+# بناء كارت الهيدر الملون
+header_html = f"""
+<div class="header-card">
+    {"<img src='" + logo_b64 + "' class='header-logo' />" if logo_b64 else ""}
+    <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
+    <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
+</div>
+"""
 
-st.markdown(
-    """
-        <div class="main-title">🏛️ الأكاديمية المهنية للمعلمين - فرع الجيزة</div>
-        <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-st.divider()
+st.markdown(header_html, unsafe_allow_html=True)
 
 # 3. القائمة الجانبية (Sidebar)
 st.sidebar.header("📁 إدارة البيانات")
@@ -226,7 +248,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية (أزرار منفصلة وبارزة)
+# 6. البرامج التدريبية
 st.markdown(
     '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
@@ -276,7 +298,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 8. الإحصائيات العامة (كروت موسطة بالكامل)
+# 8. الإحصائيات العامة
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
