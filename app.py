@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتوسيط كافة العناصر والبيانات والكروت بدقة
+# 🎨 CSS لتوسيط كافة العناصر والبيانات والكروت والأزرار بدقة
 st.markdown(
     """
     <style>
@@ -24,16 +24,17 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🎯 توسيط قسم الهيدر */
+    /* 🎯 توسيط قسم الهيدر (الشعار والعناوين) */
     .header-container {
         text-align: center;
-        padding: 10px 0px 20px 0px;
+        padding: 5px 0px 15px 0px;
     }
 
     .main-title {
         color: #ffffff;
         font-size: 30px;
         font-weight: 800;
+        margin-top: 10px;
         margin-bottom: 8px;
     }
 
@@ -94,7 +95,7 @@ st.markdown(
         transform: scale(1.03) !important;
     }
 
-    /* 📊🔥 توسيط كروت الإحصائيات بالكامل (النص والرقم) 🔥📊 */
+    /* 📊 توسيط كروت الإحصائيات بالكامل (النص والرقم) */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -151,15 +152,30 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر وشعار الفرع (اللوجو أعلى العنوان الرئيسي)
-logo_path = "logo.png"
+# 2. البحث المرن عن اللوجو وعرضه أعلى العنوان مباشرة
+possible_files = [
+    "logo.png",
+    "logo.jpg",
+    "logo.jpeg",
+    "Logo.png",
+    "Logo.jpg",
+    "Logo.PNG",
+]
+found_logo = None
+
+for file in possible_files:
+    if os.path.exists(file):
+        found_logo = file
+        break
 
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 
-if os.path.exists(logo_path):
+if found_logo:
     c_left, c_mid, c_right = st.columns([2, 1, 2])
     with c_mid:
-        st.image(logo_path, use_container_width=True)
+        st.image(found_logo, use_container_width=True)
+else:
+    st.info("💡 لتنفيذ الشعار: ضع صورة الشعار باسم logo.png داخل مجلد المشروع.")
 
 st.markdown(
     """
@@ -210,7 +226,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية
+# 6. البرامج التدريبية (أزرار منفصلة وبارزة)
 st.markdown(
     '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
