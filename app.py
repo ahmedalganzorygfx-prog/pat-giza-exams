@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتوسيط الشعار، العناوين، والأزرار المخصصة
+# 🎨 CSS لتوسيط كافة العناصر والبيانات والكروت بدقة
 st.markdown(
     """
     <style>
@@ -24,18 +24,10 @@ st.markdown(
         text-align: right;
     }
 
-    /* 🎯 توسيط قسم الهيدر (الشعار والعناوين) */
+    /* 🎯 توسيط قسم الهيدر */
     .header-container {
         text-align: center;
         padding: 10px 0px 20px 0px;
-    }
-    
-    .logo-img {
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        margin-bottom: 15px;
-        width: 120px;
     }
 
     .main-title {
@@ -102,40 +94,69 @@ st.markdown(
         transform: scale(1.03) !important;
     }
 
-    /* 📊 كروت الإحصائيات */
+    /* 📊🔥 توسيط كروت الإحصائيات بالكامل (النص والرقم) 🔥📊 */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
-        padding: 16px !important;
-        border-radius: 12px !important;
+        padding: 18px 10px !important;
+        border-radius: 14px !important;
         border: 1px solid #334155 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
         text-align: center !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
     }
 
+    div[data-testid="stMetric"] > div {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
     div[data-testid="stMetricLabel"] {
         color: #94a3b8 !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 700 !important;
+        width: 100% !important;
+        display: flex !important;
         justify-content: center !important;
+        text-align: center !important;
+    }
+
+    div[data-testid="stMetricLabel"] > div {
+        width: 100% !important;
+        text-align: center !important;
     }
 
     div[data-testid="stMetricValue"] {
         color: #f8fafc !important;
-        font-size: 28px !important;
+        font-size: 30px !important;
         font-weight: 800 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        text-align: center !important;
+        margin-top: 4px !important;
+    }
+
+    div[data-testid="stMetricValue"] > div {
+        width: 100% !important;
+        text-align: center !important;
     }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# 2. الهيدر وشعار الفرع (اللوجو أعلى العنوان الرئيسي مباشرة)
+# 2. الهيدر وشعار الفرع (اللوجو أعلى العنوان الرئيسي)
 logo_path = "logo.png"
 
 st.markdown('<div class="header-container">', unsafe_allow_html=True)
 
 if os.path.exists(logo_path):
-    # عرض اللوجو في منتصف الشاشة أعلى العنوان
     c_left, c_mid, c_right = st.columns([2, 1, 2])
     with c_mid:
         st.image(logo_path, use_container_width=True)
@@ -189,7 +210,7 @@ with col_reset:
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
-# 6. البرامج التدريبية (أزرار منفصلة وبارزة)
+# 6. البرامج التدريبية
 st.markdown(
     '<div class="section-title-center">🎯 اختر البرنامج التدريبي</div>',
     unsafe_allow_html=True,
@@ -239,7 +260,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 8. الإحصائيات العامة
+# 8. الإحصائيات العامة (كروت موسطة بالكامل)
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
@@ -280,7 +301,7 @@ c5.metric("⏳ قيد الاختبار", pending)
 
 st.divider()
 
-# 9. جدول البيانات
+# 9. جدول بيانات المعلمين
 st.markdown(
     '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
     unsafe_allow_html=True,
