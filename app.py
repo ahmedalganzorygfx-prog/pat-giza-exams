@@ -401,48 +401,43 @@ c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 📊 الرسم البياني التفاعلي لعدد الممتحنين لكل برنامج تدريبي باستعمال Altair المدمجة
-if "البرنامج" in df.columns:
+# 🍩 الرسم البياني الدائري التفاعلي لنسب وعدد الممتحنين حسب البرنامج التدريبي
+if "البرنامج" in df.columns and not df.empty:
     st.markdown(
-        '<div class="section-title-center">📈 عدد الممتحنين حسب البرنامج التدريبي</div>',
+        '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج التدريبي</div>',
         unsafe_allow_html=True,
     )
 
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
-    # إنشاء رسم بياني تفاعلي باستخدام Altair (مدمج افتراضياً مع Streamlit)
-    bars = (
+    # إنشاء رسم بياني دائري تفاعلي (Donut Chart) باستخدام Altair
+    pie_chart = (
         alt.Chart(prog_counts)
-        .mark_bar(color="#38bdf8", cornerRadiusTopLeft=6, cornerRadiusTopRight=6)
+        .mark_arc(innerRadius=60, outerRadius=120)
         .encode(
-            x=alt.X(
-                "البرنامج_التدريبي:N",
-                title=None,
-                sort="-y",
-                axis=alt.Axis(labelAngle=-15, labelFontSize=12),
+            theta=alt.Theta(field="عدد_الممتحنين", type="quantitative"),
+            color=alt.Color(
+                field="البرنامج_التدريبي",
+                type="nominal",
+                title="البرنامج التدريبي",
+                scale=alt.Scale(
+                    scheme="category10"
+                ),  # ألوان متناسقة ومختلفة لكل قطاع
             ),
-            y=alt.Y(
-                "عدد_الممتحنين:Q",
-                title="عدد الممتحنين",
-                axis=alt.Axis(grid=True),
-            ),
-            tooltip=["البرنامج_التدريبي", "عدد_الممتحنين"],
+            tooltip=[
+                alt.Tooltip("البرنامج_التدريبي", title="البرنامج"),
+                alt.Tooltip("عدد_الممتحنين", title="عدد الممتحنين"),
+            ],
         )
-    )
-
-    text = bars.mark_text(
-        align="center", baseline="bottom", dy=-5, color="white", fontSize=13
-    ).encode(text="عدد_الممتحنين:Q")
-
-    chart = (
-        (bars + text)
         .properties(height=380)
+        .configure_legend(
+            orient="bottom", labelFontSize=12, titleFontSize=13, labelColor="white", titleColor="white"
+        )
         .configure_view(strokeWidth=0)
-        .interactive()
     )
 
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(pie_chart, use_container_width=True)
 
 st.divider()
 
