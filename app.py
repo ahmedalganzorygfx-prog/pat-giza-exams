@@ -5,7 +5,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-# 1. إعدادات الصفحة (إغلاق القائمة الجانبية تلقائياً على الشاشات الصغيرة)
+# 1. إعدادات الصفحة
 st.set_page_config(
     page_title="لوحة تحكم الامتحانات - فرع الجيزة",
     page_icon="📝",
@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 🎨 CSS لتنسيق التطبيق وجعله متجاوباً مع الهواتف الذكية (Responsive Design)
+# 🎨 CSS لتنسيق التطبيق المخصص للموبايل والشاشات المختلفة
 st.markdown(
     """
     <style>
@@ -23,18 +23,13 @@ st.markdown(
     }
 
     /* 🎯 محاذاة عناوين وأجسام جدول البيانات */
-    [data-testid="stDataFrame"] div[role="columnheader"] {
-        text-align: right !important;
-        justify-content: flex-start !important;
-        direction: rtl !important;
-    }
-
+    [data-testid="stDataFrame"] div[role="columnheader"],
     [data-testid="stDataFrame"] div[role="gridcell"] {
         text-align: right !important;
         direction: rtl !important;
     }
 
-    /* 🎯 محاذاة عناصر السايدبار */
+    /* 🎯 محاذاة السايدبار */
     [data-testid="stSidebar"] {
         direction: rtl;
         text-align: center !important;
@@ -67,7 +62,7 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 🎨 تصميم زر القائمة الجانبية */
+    /* 🎨 تصميم أزرار القائمة الجانبية */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #ffffff !important;
@@ -145,7 +140,7 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 إصلاح لون وتنسيق كروت الإحصائيات (Metrics) */
+    /* 📊 كروت الإحصائيات (Metrics) */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 12px 8px !important;
@@ -163,18 +158,18 @@ st.markdown(
     div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
         color: #38bdf8 !important;
         font-weight: 800 !important;
-        font-size: 13px !important;
+        font-size: 14px !important;
     }
 
     div[data-testid="stMetricValue"] > div {
         width: 100% !important;
         text-align: center !important;
         color: #ffffff !important;
-        font-size: 22px !important;
+        font-size: 24px !important;
         font-weight: 900 !important;
     }
 
-    /* 🎨 تصميم خريطة البرامج المخصصة (Custom Legend) */
+    /* 🎨 خريطة البرامج المخصصة (Custom Legend) */
     .custom-legend-container {
         display: flex;
         flex-wrap: wrap;
@@ -205,7 +200,7 @@ st.markdown(
         display: inline-block;
     }
 
-    /* 💡 بطاقة الحقوق في أسفل الصفحة */
+    /* 💡 بطاقة الحقوق أسفل الصفحة */
     .page-footer-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #38bdf8;
@@ -226,7 +221,7 @@ st.markdown(
         margin: 0 !important;
     }
 
-    /* 📱 تحسينات متقدمة للشاشات الصغيرة والموبايل */
+    /* 📱 تحسينات خاصة بالشاشات الصغيرة والموبايل */
     @media (max-width: 768px) {
         .header-card {
             padding: 15px 10px;
@@ -238,21 +233,20 @@ st.markdown(
         }
 
         .main-title {
-            font-size: 17px !important;
+            font-size: 18px !important;
         }
 
         .sub-title {
-            font-size: 13px !important;
+            font-size: 14px !important;
         }
 
         .section-title-center {
             font-size: 16px !important;
         }
 
-        /* تقليل الحواشي الداخلية في الموبايل لمساحة عرض أكبر */
         .block-container {
-            padding-left: 0.5rem !important;
-            padding-right: 0.5rem !important;
+            padding-left: 0.8rem !important;
+            padding-right: 0.8rem !important;
             padding-top: 1rem !important;
         }
     }
@@ -349,13 +343,13 @@ if err_msg:
 col_search, col_date, col_reset = st.columns([2, 2, 1])
 
 with col_search:
-    search_query = st.text_input("🔍 بحث بالرقم القومي أو كود المعلم:")
+    search_query = st.text_input("🔍 بحث بالرقم القومي/كود المعلم:")
 
 with col_date:
     selected_date = st.date_input("📅 تاريخ الاختبار:", value=None)
 
 with col_reset:
-    st.write(" ")
+    st.write("")
     if st.button("🔄 إعادة تعيين", use_container_width=True):
         st.rerun()
 
@@ -420,18 +414,18 @@ pending = (
     else 0
 )
 
-# عرض الإحصائيات في صفوف مرنة
-c1, c2, c3, c4, c5 = st.columns(5)
+c1, c2, c3, c4, c5 = st.columns([1, 1, 1, 1, 1])
+
 c1.metric("📊 إجمالي الممتحنين", total)
 c2.metric("🎟️ حجز اختبار", reserved)
 c3.metric("✅ ناجحين", passed)
 c4.metric("❌ راسبين", failed)
 c5.metric("⏳ قيد الاختبار", pending)
 
-# 🍩 الرسم البياني الدائري التفاعلي + خريطة برامج مخصصة
+# 🍩 الرسم البياني الدائري التفاعلي
 if "البرنامج" in df.columns and not df.empty:
     st.markdown(
-        '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج التدريبي</div>',
+        '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج</div>',
         unsafe_allow_html=True,
     )
 
@@ -450,7 +444,7 @@ if "البرنامج" in df.columns and not df.empty:
 
     pie_chart = (
         alt.Chart(prog_counts)
-        .mark_arc(innerRadius=50, outerRadius=110)
+        .mark_arc(innerRadius=50, outerRadius=100)
         .encode(
             theta=alt.Theta(field="عدد_الممتحنين", type="quantitative"),
             color=alt.Color(
@@ -467,7 +461,7 @@ if "البرنامج" in df.columns and not df.empty:
                 alt.Tooltip("عدد_الممتحنين", title="عدد الممتحنين"),
             ],
         )
-        .properties(height=280)
+        .properties(height=260)
         .configure_view(strokeWidth=0)
     )
 
@@ -517,7 +511,7 @@ if not filtered_df.empty:
 else:
     st.info("لا توجد نتائج تطابق خيارات البحث والتصفية لهذا البرنامج.")
 
-# 9. بطاقة الحقوق في أسفل الصفحة
+# 9. بطاقة الحقوق أسفل الصفحة
 st.markdown(
     """
     <div class="page-footer-card">
