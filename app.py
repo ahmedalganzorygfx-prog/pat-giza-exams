@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وإضافة هايلايت بارز لعناوين البطاقات
+# 🎨 CSS لتنسيق التطبيق
 st.markdown(
     """
     <style>
@@ -157,65 +157,41 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 كروت الإحصائيات (Metrics) */
-    div[data-testid="stMetric"] {
-        background-color: #1e293b !important;
-        padding: 18px 10px !important;
-        border-radius: 14px !important;
-        border: 1px solid #334155 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        text-align: center !important;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    /* 📊 تصميم البطاقات الإحصائية المخصصة بـ HTML بدلاً من st.metric */
+    .custom-metric-card {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 14px;
+        padding: 18px 10px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
     }
 
-    div[data-testid="stMetric"] > div {
-        width: 100% !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
-    /* ✨ تصميم الهايلايت البارز لعنوان البطاقة */
-    div[data-testid="stMetricLabel"] {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        text-align: center !important;
-    }
-
-    div[data-testid="stMetricLabel"] p, 
-    div[data-testid="stMetricLabel"] label, 
-    div[data-testid="stMetricLabel"] span {
-        background-color: #facc15 !important; /* لون الهايلايت */
-        color: #0f172a !important;            /* لون النص الداخلي */
-        padding: 4px 12px !important;
+    /* ✨ عنوان البطاقة مع الهايلايت الأصفر المباشر */
+    .custom-metric-title {
+        background-color: #facc15 !important; /* لون الهايلايت الأصفر */
+        color: #0f172a !important;            /* لون النص الداكن للوضوح */
+        padding: 4px 14px !important;
         border-radius: 8px !important;
         font-size: 16px !important;
         font-weight: 900 !important;
         display: inline-block !important;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
-        margin: 0 !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+        margin-bottom: 8px !important;
     }
 
-    div[data-testid="stMetricValue"] {
+    /* 🔢 الرقم الإحصائي الأبيض الكبير */
+    .custom-metric-value {
         color: #ffffff !important;
         font-size: 32px !important;
         font-weight: 900 !important;
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        text-align: center !important;
-        margin-top: 8px !important;
-    }
-
-    div[data-testid="stMetricValue"] > div {
-        width: 100% !important;
-        text-align: center !important;
-        color: #ffffff !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
     }
 
     /* 🎨 تصميم خريطة البرامج المخصصة (Custom Legend) */
@@ -406,7 +382,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 7. الإحصائيات العامة
+# 7. الإحصائيات العامة (تم استبدالها بـ HTML لضمان ظهور الهايلايت 100%)
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
@@ -432,12 +408,25 @@ if "الحالة" in filtered_df.columns:
 else:
     reserved = passed = failed = pending = 0
 
-c1, c2, c3, c4, c5 = st.columns(5)
-c1.metric("📊 إجمالي الممتحنين", total)
-c2.metric("🎟️ حجز اختبار", reserved)
-c3.metric("✅ ناجحين", passed)
-c4.metric("❌ راسبين", failed)
-c5.metric("⏳ قيد الاختبار", pending)
+# إنشاء بطاقات الإحصائيات المخصصة
+metrics_data = [
+    ("📊 إجمالي الممتحنين", total),
+    ("🎟️ حجز اختبار", reserved),
+    ("✅ ناجحين", passed),
+    ("❌ راسبين", failed),
+    ("⏳ قيد الاختبار", pending),
+]
+
+cols = st.columns(5)
+for i, (title, val) in enumerate(metrics_data):
+    with cols[i]:
+        card_html = f"""
+        <div class="custom-metric-card">
+            <div class="custom-metric-title">{title}</div>
+            <div class="custom-metric-value">{val}</div>
+        </div>
+        """
+        st.markdown(card_html, unsafe_allow_html=True)
 
 # 🍩 الرسم البياني الدائري التفاعلي + خريطة برامج مخصصة
 if "البرنامج" in df.columns and not df.empty:
