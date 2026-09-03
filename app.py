@@ -157,18 +157,19 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 كروت الإحصائيات (Metrics) - تعديل لون العناوين إلى السماوي الفاتح المضيء (#38bdf8) */
-    div[data-testid="stMetric"] {
-        background-color: #1e293b !important;
-        padding: 18px 10px !important;
-        border-radius: 14px !important;
-        border: 1px solid #334155 !important;
+    div[data-testid="stMetricLabel"] {
+        color: #38bdf8 !important; /* تغيير اللون إلى السماوي الفاتح لتوضيح النصوص */
+        font-size: 18px !important;
+        font-weight: 800 !important;
+        width: 100% !important;
         display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
+        color: #38bdf8 !important; /* تطبيق اللون الفاتح على العناصر الداخلية */
+        font-weight: 800 !important;
     }
 
     div[data-testid="stMetric"] > div {
