@@ -4,29 +4,43 @@ import io
 import os
 import altair as alt
 import pandas as pd
+import requests
 import streamlit as st
 
-# مكتبات ReportLab لتوليد ملف الـ PDF
+# مكتبات ReportLab والخطوط
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
-# دعم اللغة العربية في ReportLab
-try:
-    import arabic_reshaper
-    from bidi.algorithm import get_display
+# مكتبات دعم إعادة تشكيل اللغة العربية والمحاذاة
+import arabic_reshaper
+from bidi.algorithm import get_display
 
-    def process_arabic(text):
-        if not text or str(text) == "-":
-            return "-"
-        reshaped = arabic_reshaper.reshape(str(text))
-        return get_display(reshaped)
 
-except ImportError:
+# 🛠️ تحميل وتسجيل الخط العربي Amiri تلقائياً لحل مشكلة المربعات السوداء
+def setup_arabic_font():
+    font_path = "Amiri-Regular.ttf"
+    if not os.path.exists(font_path):
+        url = "https://github.com/google/fonts/raw/main/ofl/amiri/Amiri-Regular.ttf"
+        response = requests.get(url)
+        with open(font_path, "wb") as f:
+            f.write(response.content)
 
-    def process_arabic(text):
-        return str(text)
+    pdfmetrics.registerFont(TTFont("Amiri", font_path))
+
+
+setup_arabic_font()
+
+
+# 🛠️ دالة معالجة النص العربي للـ PDF
+def process_arabic(text):
+    if not text or str(text).strip() == "-" or str(text).strip() == "":
+        return "-"
+    reshaped = arabic_reshaper.reshape(str(text))
+    return get_display(reshaped)
 
 
 # 1. إعدادات الصفحة
@@ -37,22 +51,15 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق
+# 🎨 CSS لتنسيق الواجهة والبطاقات والسايدبار
 st.markdown(
     """
     <style>
-    /* محاذاة RTL عامة */
     html, body, [data-testid="stAppViewContainer"] {
         direction: rtl;
     }
 
-    [data-testid="stDataFrame"] div[role="columnheader"] {
-        text-align: right !important;
-        justify-content: flex-start !important;
-        direction: rtl !important;
-    }
-
-    [data-testid="stDataFrame"] div[role="gridcell"] {
+    [data-testid="stDataFrame"] div[role="columnheader"], [data-testid="stDataFrame"] div[role="gridcell"] {
         text-align: right !important;
         direction: rtl !important;
     }
@@ -72,25 +79,6 @@ st.markdown(
         display: none !important;
     }
 
-    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
-        text-align: center !important;
-        width: 100% !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stRadio"] {
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stRadio"] > div {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 10px !important;
-        width: 100% !important;
-        align-items: center !important;
-    }
-
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #ffffff !important;
@@ -100,32 +88,12 @@ st.markdown(
         font-weight: 800 !important;
         font-size: 15px !important;
         cursor: pointer !important;
-        transition: all 0.25s ease-in-out !important;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
         width: 100% !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
         text-align: center !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stRadio"] label p {
-        color: #ffffff !important;
-        font-weight: 800 !important;
-        font-size: 15px !important;
-        margin: 0 !important;
-    }
-
-    [data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
-        background: #334155 !important;
-        border-color: #38bdf8 !important;
-        color: #ffffff !important;
-        transform: translateY(-2px) !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-        color: #ffffff !important;
         border-color: #38bdf8 !important;
         box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
     }
@@ -136,19 +104,14 @@ st.markdown(
         border-radius: 20px;
         padding: 30px 20px;
         text-align: center;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.15);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         margin-bottom: 25px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
     }
 
     .header-logo {
         width: 200px;
         height: auto;
         margin-bottom: 15px;
-        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5));
     }
 
     .main-title {
@@ -156,7 +119,6 @@ st.markdown(
         font-size: 30px;
         font-weight: 800;
         margin-bottom: 8px;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     .sub-title {
@@ -180,10 +142,6 @@ st.markdown(
         padding: 18px 10px;
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
         margin-bottom: 10px;
     }
 
@@ -195,7 +153,6 @@ st.markdown(
         font-size: 16px !important;
         font-weight: 900 !important;
         display: inline-block !important;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
         margin-bottom: 8px !important;
     }
 
@@ -204,7 +161,6 @@ st.markdown(
         font-size: 32px !important;
         font-weight: 900 !important;
         margin: 0 !important;
-        line-height: 1.2 !important;
     }
 
     .custom-legend-container {
@@ -227,7 +183,6 @@ st.markdown(
         color: #ffffff !important;
         font-weight: 700;
         font-size: 14px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     .legend-color-dot {
@@ -243,7 +198,6 @@ st.markdown(
         border-radius: 16px;
         padding: 15px 25px;
         text-align: center;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
         margin: 40px auto 20px auto;
         max-width: 450px;
     }
@@ -252,7 +206,6 @@ st.markdown(
         color: #ffffff !important;
         font-weight: 800 !important;
         font-size: 16px !important;
-        line-height: 1.6 !important;
         margin: 0 !important;
     }
     </style>
@@ -279,13 +232,7 @@ possible_files = [
     "Logo.jpg",
     "Logo.PNG",
 ]
-found_logo = None
-
-for file in possible_files:
-    if os.path.exists(file):
-        found_logo = file
-        break
-
+found_logo = next((f for f in possible_files if os.path.exists(f)), None)
 logo_b64 = get_image_base64(found_logo) if found_logo else ""
 
 header_html = f"""
@@ -295,15 +242,13 @@ header_html = f"""
     <div class="sub-title">📝 لوحة تحكم وإحصائيات الامتحانات أونلاين</div>
 </div>
 """
-
 st.markdown(header_html, unsafe_allow_html=True)
 
-# 3. القائمة الجانبية (Sidebar)
+# 3. القائمة الجانبية
 st.sidebar.markdown(
     "<h3 style='text-align: center;'>🎯 البرامج التدريبية</h3>",
     unsafe_allow_html=True,
 )
-
 program_options = [
     "الكل",
     "تطبيقات تربوية للمعلم المساعد",
@@ -347,13 +292,10 @@ if err_msg:
 
 # 5. شريط البحث والتاريخ
 col_search, col_date, col_reset = st.columns([2, 2, 1])
-
 with col_search:
     search_query = st.text_input("🔍 بحث بالرقم القومي أو كود المعلم:")
-
 with col_date:
     selected_date = st.date_input("📅 تاريخ الاختبار:", value=None)
-
 with col_reset:
     st.write(" ")
     st.write(" ")
@@ -390,9 +332,8 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 7. حساب الإحصائيات العامة
+# 7. حساب الإحصائيات
 total = len(filtered_df)
-
 if "الحالة" in filtered_df.columns:
     status_series = filtered_df["الحالة"].astype(str).str.strip()
     reserved = len(
@@ -411,52 +352,56 @@ else:
     reserved = passed = failed = pending = 0
 
 
-# 📄 دالة إنشاء تقرير PDF الإحصائي
+# 📄 دالة إنشاء تقرير PDF بالخط العربي المعتمد
 def generate_pdf_report(data_df, program_filter):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
-        buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30
+        buffer,
+        pagesize=A4,
+        rightMargin=30,
+        leftMargin=30,
+        topMargin=30,
+        bottomMargin=30,
     )
 
-    styles = getSampleStyleSheet()
     title_style = ParagraphStyle(
         name="ArabicTitle",
-        fontName="Helvetica-Bold",
+        fontName="Amiri",
         fontSize=18,
+        leading=22,
         alignment=1,
-        spaceAfter=15,
+        spaceAfter=12,
     )
     subtitle_style = ParagraphStyle(
         name="ArabicSubTitle",
-        fontName="Helvetica",
-        fontSize=12,
+        fontName="Amiri",
+        fontSize=11,
+        leading=15,
         alignment=1,
-        spaceAfter=20,
+        spaceAfter=18,
     )
     heading_style = ParagraphStyle(
         name="ArabicHeading",
-        fontName="Helvetica-Bold",
+        fontName="Amiri",
         fontSize=14,
+        leading=18,
         alignment=2,
         spaceAfter=10,
     )
     cell_style = ParagraphStyle(
-        name="ArabicCell",
-        fontName="Helvetica",
-        fontSize=10,
-        alignment=1,
+        name="ArabicCell", fontName="Amiri", fontSize=10, leading=14, alignment=1
     )
     header_cell_style = ParagraphStyle(
         name="ArabicHeaderCell",
-        fontName="Helvetica-Bold",
-        fontSize=10,
+        fontName="Amiri",
+        fontSize=11,
+        leading=15,
         alignment=1,
         textColor=colors.whitesmoke,
     )
 
     elements = []
 
-    # العنوان الرئيسي
     elements.append(
         Paragraph(
             process_arabic(
@@ -467,7 +412,7 @@ def generate_pdf_report(data_df, program_filter):
     )
     now_str = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M")
     prog_str = (
-        f"البرنامج المفلتر: {program_filter}"
+        f"البرنامج: {program_filter}"
         if program_filter != "الكل"
         else "جميع البرامج التدريبية"
     )
@@ -479,11 +424,10 @@ def generate_pdf_report(data_df, program_filter):
     )
     elements.append(Spacer(1, 10))
 
-    # 1. جدول الإحصائيات العامة
+    # 1. الإحصائيات العامة
     elements.append(
         Paragraph(process_arabic("1. الإحصائيات العامة:"), heading_style)
     )
-
     stats_headers = [
         "قيد الاختبار",
         "راسبين",
@@ -521,7 +465,7 @@ def generate_pdf_report(data_df, program_filter):
     elements.append(t1)
     elements.append(Spacer(1, 20))
 
-    # 2. جدول الإحصائيات حسب التواريخ
+    # 2. الإحصائيات حسب التواريخ
     if "وقت أداء الاختبار" in data_df.columns:
         elements.append(
             Paragraph(
@@ -578,7 +522,7 @@ def generate_pdf_report(data_df, program_filter):
         elements.append(t2)
         elements.append(Spacer(1, 20))
 
-    # 3. جدول الإحصائيات حسب البرامج التدريبية
+    # 3. الإحصائيات حسب البرامج
     if "البرنامج" in data_df.columns:
         elements.append(
             Paragraph(
@@ -632,15 +576,13 @@ def generate_pdf_report(data_df, program_filter):
     return buffer
 
 
-# زر تحميل تقرير الـ PDF ورأس قسم الإحصائيات
+# قسم الإحصائيات العامة مع زر تحميل PDF
 col_title, col_pdf = st.columns([3, 1])
-
 with col_title:
     st.markdown(
         '<div class="section-title-center">📊 الإحصائيات العامة</div>',
         unsafe_allow_html=True,
     )
-
 with col_pdf:
     st.write(" ")
     pdf_bytes = generate_pdf_report(filtered_df, selected_program)
@@ -652,7 +594,6 @@ with col_pdf:
         use_container_width=True,
     )
 
-# عرض بطاقات الإحصائيات
 metrics_data = [
     ("📊 إجمالي الممتحنين", total),
     ("🎟️ حجز اختبار", reserved),
@@ -672,13 +613,12 @@ for i, (title, val) in enumerate(metrics_data):
         """
         st.markdown(card_html, unsafe_allow_html=True)
 
-# 🍩 الرسم البياني الدائري التفاعلي + خريطة برامج مخصصة
+# الرسم البياني
 if "البرنامج" in df.columns and not df.empty:
     st.markdown(
         '<div class="section-title-center">🍩 توزيع الممتحنين حسب البرنامج التدريبي</div>',
         unsafe_allow_html=True,
     )
-
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
@@ -733,12 +673,11 @@ if "البرنامج" in df.columns and not df.empty:
 
 st.divider()
 
-# 8. جدول بيانات المعلمين
+# 8. جدول البيانات
 st.markdown(
     '<div class="section-title-center">📋 جدول بيانات المعلمين</div>',
     unsafe_allow_html=True,
 )
-
 desired_order_rtl = [
     "وقت أداء الاختبار",
     "الحالة",
@@ -747,7 +686,6 @@ desired_order_rtl = [
     "اسم المعلم",
     "كود المعلم",
 ]
-
 columns_to_show = [
     col for col in desired_order_rtl if col in filtered_df.columns
 ]
@@ -761,7 +699,7 @@ if not filtered_df.empty:
 else:
     st.info("لا توجد نتائج تطابق خيارات البحث والتصفية لهذا البرنامج.")
 
-# 9. بطاقة الحقوق في أسفل الصفحة
+# 9. التذييل
 st.markdown(
     """
     <div class="page-footer-card">
