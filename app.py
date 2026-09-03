@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وضمان ظهور الخطوط والعناوين بلون فاتح وواضح جداً
+# 🎨 CSS لتنسيق التطبيق وضمان ظهور الخطوط والعناوين بلون أصفر فاتح وواضح جداً
 st.markdown(
     """
     <style>
@@ -157,7 +157,7 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 كروت الإحصائيات (Metrics) - تعديل لون العناوين إلى السماوي الفاتح المضيء (#38bdf8) */
+    /* 📊 كروت الإحصائيات (Metrics) - تعديل لون العناوين إلى الأصفر الذهبي الفاتح المضيء (#facc15) */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -179,9 +179,9 @@ st.markdown(
         justify-content: center !important;
     }
 
-    /* ✨ تعديل لون عنوان البطاقة ليكون فاتحاً وواضحاً جداً */
+    /* ✨ تعديل لون عنوان البطاقة ليكون أصفراً فاتحاً وواضحاً جداً */
     div[data-testid="stMetricLabel"] {
-        color: #38bdf8 !important;
+        color: #facc15 !important;
         font-size: 18px !important;
         font-weight: 800 !important;
         width: 100% !important;
@@ -191,7 +191,7 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
-        color: #38bdf8 !important;
+        color: #facc15 !important;
         font-weight: 800 !important;
     }
 
