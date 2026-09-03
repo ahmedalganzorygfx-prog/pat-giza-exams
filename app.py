@@ -5,15 +5,15 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-# 1. إعدادات الصفحة
+# 1. إعدادات الصفحة (كما كانت)
 st.set_page_config(
     page_title="لوحة تحكم الامتحانات - فرع الجيزة",
     page_icon="📝",
     layout="wide",
-    initial_sidebar_state="collapsed",  # مناسب للموبايل
+    initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق واستجابته للشاشات المختلفة
+# 🎨 CSS لتنسيق التطبيق ومحاذاة الجدول وإظهار الخطوط بوضوح (التصميم الأصلي)
 st.markdown(
     """
     <style>
@@ -22,7 +22,7 @@ st.markdown(
         direction: rtl;
     }
 
-    /* 🎯 محاذاة عناوين وأجسام جدول البيانات */
+    /* 🎯 محاذاة عناوين وأجسام جدول البيانات من اليمين للجميع */
     [data-testid="stDataFrame"] div[role="columnheader"] {
         text-align: right !important;
         justify-content: flex-start !important;
@@ -44,15 +44,21 @@ st.markdown(
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        padding: 10px !important;
     }
 
+    /* 🛠️ إخفاء عناصر السايدبار عند التقليص */
+    [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarContent"] {
+        display: none !important;
+    }
+
+    /* 🎯 توسيط عنوان السايدبار */
     [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
         text-align: center !important;
         width: 100% !important;
         color: #ffffff !important;
     }
 
+    /* 🔘 توسيط حاوية أزرار الراديو بداخل السايدبار */
     [data-testid="stSidebar"] div[data-testid="stRadio"] {
         width: 100% !important;
         display: flex !important;
@@ -62,34 +68,35 @@ st.markdown(
     [data-testid="stSidebar"] div[data-testid="stRadio"] > div {
         display: flex !important;
         flex-direction: column !important;
-        gap: 8px !important;
+        gap: 10px !important;
         width: 100% !important;
         align-items: center !important;
     }
 
-    /* 🎨 أزرار القائمة الجانبية */
+    /* 🎨 إصلاح لون الخط في القائمة الجانبية ليصبح أبيض وواضح جداً */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #ffffff !important;
         border: 2px solid #334155 !important;
-        padding: 10px 12px !important;
+        padding: 12px 15px !important;
         border-radius: 12px !important;
         font-weight: 800 !important;
-        font-size: 14px !important;
+        font-size: 15px !important;
         cursor: pointer !important;
         transition: all 0.25s ease-in-out !important;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
         width: 100% !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: space-between !important;
         text-align: center !important;
     }
 
+    /* إظهار النص بوضوح داخل عناصر الراديو */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label p {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 14px !important;
+        font-size: 15px !important;
         margin: 0 !important;
     }
 
@@ -104,18 +111,18 @@ st.markdown(
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
         color: #ffffff !important;
         border-color: #38bdf8 !important;
-        box-shadow: 0 0 10px rgba(56, 189, 248, 0.5) !important;
+        box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
     }
 
-    /* 🎯 بطاقة الهيدر الملونة */
+    /* 🎯 بطاقة الهيدر الملونة والأنيقة */
     .header-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #334155;
         border-radius: 20px;
-        padding: 20px 15px;
+        padding: 30px 20px;
         text-align: center;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 15px rgba(56, 189, 248, 0.15);
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -123,42 +130,41 @@ st.markdown(
     }
 
     .header-logo {
-        max-width: 160px;
-        width: 100%;
+        width: 200px;
         height: auto;
-        margin-bottom: 12px;
-        filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.5));
+        margin-bottom: 15px;
+        filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.5));
     }
 
     .main-title {
         color: #ffffff;
-        font-size: 24px;
+        font-size: 30px;
         font-weight: 800;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         text-shadow: 0 2px 4px rgba(0,0,0,0.5);
     }
 
     .sub-title {
         color: #38bdf8;
-        font-size: 18px;
+        font-size: 22px;
         font-weight: 700;
     }
 
-    /* 🎯 عناوين الأقسام */
+    /* 🎯 توسيط العناوين الفرعية */
     .section-title-center {
         text-align: center !important;
-        font-size: 20px !important;
+        font-size: 24px !important;
         font-weight: 800 !important;
         color: #ffffff !important;
-        margin-top: 15px !important;
+        margin-top: 20px !important;
         margin-bottom: 15px !important;
     }
 
-    /* 📊 كروت الإحصائيات (Metrics) */
+    /* 📊 إصلاح لون خط كروت الإحصائيات (Metrics) ليظهر بشكل واضح جداً */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
-        padding: 12px 8px !important;
-        border-radius: 12px !important;
+        padding: 18px 10px !important;
+        border-radius: 14px !important;
         border: 1px solid #334155 !important;
         display: flex !important;
         flex-direction: column !important;
@@ -166,7 +172,6 @@ st.markdown(
         justify-content: center !important;
         text-align: center !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
-        margin-bottom: 8px !important;
     }
 
     div[data-testid="stMetric"] > div {
@@ -179,7 +184,7 @@ st.markdown(
 
     div[data-testid="stMetricLabel"] {
         color: #38bdf8 !important;
-        font-size: 14px !important;
+        font-size: 17px !important;
         font-weight: 800 !important;
         width: 100% !important;
         display: flex !important;
@@ -194,13 +199,13 @@ st.markdown(
 
     div[data-testid="stMetricValue"] {
         color: #ffffff !important;
-        font-size: 24px !important;
+        font-size: 32px !important;
         font-weight: 900 !important;
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
         text-align: center !important;
-        margin-top: 2px !important;
+        margin-top: 4px !important;
     }
 
     div[data-testid="stMetricValue"] > div {
@@ -214,81 +219,50 @@ st.markdown(
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 8px;
-        margin-top: 12px;
+        gap: 15px;
+        margin-top: 15px;
         direction: rtl;
     }
 
     .custom-legend-item {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
         background-color: #1e293b;
         border: 1px solid #334155;
-        padding: 6px 12px;
-        border-radius: 16px;
+        padding: 8px 16px;
+        border-radius: 20px;
         color: #ffffff;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 14px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
     .legend-color-dot {
-        width: 10px;
-        height: 10px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
         display: inline-block;
     }
 
-    /* 💡 بطاقة الحقوق أسفل الصفحة */
+    /* 💡 بطاقة الحقوق في أسفل الصفحة (Footer) */
     .page-footer-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #38bdf8;
-        border-radius: 14px;
-        padding: 12px 20px;
+        border-radius: 16px;
+        padding: 15px 25px;
         text-align: center;
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-        margin: 30px auto 15px auto;
-        width: 90%;
-        max-width: 400px;
+        margin: 40px auto 20px auto;
+        max-width: 450px;
     }
 
     .page-footer-card p {
         color: #ffffff !important;
         font-weight: 800 !important;
-        font-size: 14px !important;
-        line-height: 1.5 !important;
+        font-size: 16px !important;
+        line-height: 1.6 !important;
         margin: 0 !important;
-    }
-
-    /* 📱 تحسينات واستجابة خاصة بشاشات الموبايل (Media Queries) */
-    @media (max-width: 768px) {
-        .header-card {
-            padding: 15px 10px;
-            border-radius: 15px;
-        }
-
-        .header-logo {
-            max-width: 120px;
-        }
-
-        .main-title {
-            font-size: 18px !important;
-        }
-
-        .sub-title {
-            font-size: 14px !important;
-        }
-
-        .section-title-center {
-            font-size: 16px !important;
-        }
-
-        .block-container {
-            padding-left: 0.8rem !important;
-            padding-right: 0.8rem !important;
-            padding-top: 1rem !important;
-        }
     }
     </style>
 """,
@@ -357,36 +331,28 @@ selected_program = st.sidebar.radio(
 )
 
 
-# 4. قراءة البيانات مع التحديث التلقائي للذاكرة المؤقتة (Cache)
+# 4. قراءة البيانات (مُعدّلة لتفريغ الـ Cache تلقائياً عند تغيير الملف)
 @st.cache_data
-def load_data_from_file(file, mtime=None):
+def load_data_from_project(file_path, mtime=None):
     try:
-        df = pd.read_excel(file, dtype=str).fillna("-")
-        df.columns = df.columns.str.strip()  # تنظيف أسماء الأعمدة من المسافات
+        df = pd.read_excel(file_path, dtype=str).fillna("-")
+        df.columns = df.columns.str.strip()
         return df, None
     except Exception as e:
-        return None, f"حدث خطأ أثناء قراءة البيانات: {e}"
+        return None, f"حدث خطأ أثناء قراءة الملف {file_path}: {e}"
 
 
-# إضافة خيار لرفع ملف إكسيل جديد مباشرة أو قراءة أحدث ملف بالمشروع
-uploaded_file = st.sidebar.file_uploader(
-    "📤 رفع ملف إكسيل جديد", type=["xlsx", "xls"]
-)
+excel_files = glob.glob("*.xlsx") + glob.glob("*.xls")
+if not excel_files:
+    st.error(
+        "⚠️ لم يتم العثور على أي ملف إكسيل (.xlsx أو .xls) في مجلد المشروع."
+    )
+    st.stop()
 
-if uploaded_file is not None:
-    df, err_msg = load_data_from_file(uploaded_file)
-else:
-    excel_files = glob.glob("*.xlsx") + glob.glob("*.xls")
-    if excel_files:
-        latest_file = excel_files[0]
-        # استخدام زمن التعديل مكمّل للـ Cache لإجبار القراءة عند تغيير الملف
-        file_mtime = os.path.getmtime(latest_file)
-        df, err_msg = load_data_from_file(latest_file, file_mtime)
-    else:
-        df, err_msg = (
-            None,
-            "لم يتم العثور على أي ملف إكسيل (.xlsx أو .xls) في مجلد المشروع.",
-        )
+file_path = excel_files[0]
+# الاعتماد على زمن آخر تعديل للملف لضمان تحديث الإحصائيات تلقائياً
+file_mtime = os.path.getmtime(file_path)
+df, err_msg = load_data_from_project(file_path, file_mtime)
 
 if err_msg:
     st.error(f"⚠️ {err_msg}")
@@ -403,8 +369,9 @@ with col_date:
 
 with col_reset:
     st.write(" ")
+    st.write(" ")
     if st.button("🔄 إعادة تعيين", use_container_width=True):
-        st.cache_data.clear()  # إفراغ الذاكرة المؤقتة يدوياً
+        st.cache_data.clear()  # تفريغ الذاكرة المؤقتة وإعادة التشغيل
         st.rerun()
 
 # 6. فلترة البيانات
@@ -436,7 +403,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 7. الإحصائيات العامة
+# 7. الإحصائيات العامة (توسيع الحالات لقراءة كافّة مصطلحات ملف الإكسيل)
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
@@ -444,7 +411,6 @@ st.markdown(
 
 total = len(filtered_df)
 
-# تنظيف وتوحيد قيم عمود "الحالة" لتفادي إهمال بعض الحالات
 if "الحالة" in filtered_df.columns:
     status_series = filtered_df["الحالة"].astype(str).str.strip()
 
@@ -463,7 +429,7 @@ if "الحالة" in filtered_df.columns:
 else:
     reserved = passed = failed = pending = 0
 
-c1, c2, c3, c4, c5 = st.columns([1, 1, 1, 1, 1])
+c1, c2, c3, c4, c5 = st.columns(5)
 c1.metric("📊 إجمالي الممتحنين", total)
 c2.metric("🎟️ حجز اختبار", reserved)
 c3.metric("✅ ناجحين", passed)
@@ -492,7 +458,7 @@ if "البرنامج" in df.columns and not df.empty:
 
     pie_chart = (
         alt.Chart(prog_counts)
-        .mark_arc(innerRadius=50, outerRadius=100)
+        .mark_arc(innerRadius=65, outerRadius=125)
         .encode(
             theta=alt.Theta(field="عدد_الممتحنين", type="quantitative"),
             color=alt.Color(
@@ -509,7 +475,7 @@ if "البرنامج" in df.columns and not df.empty:
                 alt.Tooltip("عدد_الممتحنين", title="عدد الممتحنين"),
             ],
         )
-        .properties(height=260)
+        .properties(height=320)
         .configure_view(strokeWidth=0)
     )
 
