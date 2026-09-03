@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وضمان ظهور الخطوط والعناوين بلون أصفر فاتح وواضح جداً
+# 🎨 CSS لتنسيق التطبيق وإضافة هايلايت بارز لعناوين البطاقات
 st.markdown(
     """
     <style>
@@ -157,7 +157,7 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 كروت الإحصائيات (Metrics) - تعديل لون العناوين إلى الأصفر الذهبي الفاتح المضيء (#facc15) */
+    /* 📊 كروت الإحصائيات (Metrics) */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -179,20 +179,26 @@ st.markdown(
         justify-content: center !important;
     }
 
-    /* ✨ تعديل لون عنوان البطاقة ليكون أصفراً فاتحاً وواضحاً جداً */
+    /* ✨ تصميم الهايلايت البارز لعنوان البطاقة */
     div[data-testid="stMetricLabel"] {
-        color: #facc15 !important;
-        font-size: 18px !important;
-        font-weight: 800 !important;
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
         text-align: center !important;
     }
 
-    div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
-        color: #facc15 !important;
-        font-weight: 800 !important;
+    div[data-testid="stMetricLabel"] p, 
+    div[data-testid="stMetricLabel"] label, 
+    div[data-testid="stMetricLabel"] span {
+        background-color: #facc15 !important; /* لون الهايلايت */
+        color: #0f172a !important;            /* لون النص الداخلي */
+        padding: 4px 12px !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+        font-weight: 900 !important;
+        display: inline-block !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+        margin: 0 !important;
     }
 
     div[data-testid="stMetricValue"] {
@@ -203,7 +209,7 @@ st.markdown(
         display: flex !important;
         justify-content: center !important;
         text-align: center !important;
-        margin-top: 4px !important;
+        margin-top: 8px !important;
     }
 
     div[data-testid="stMetricValue"] > div {
