@@ -352,7 +352,7 @@ else:
     reserved = passed = failed = pending = 0
 
 
-# 📄 دالة إنشاء تقرير PDF بالخط العربي المعتمد
+# 📄 دالة إنشاء تقرير PDF المحدثة مع الخط العربي والتوقيعات
 def generate_pdf_report(data_df, program_filter):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -399,9 +399,17 @@ def generate_pdf_report(data_df, program_filter):
         alignment=1,
         textColor=colors.whitesmoke,
     )
+    signature_style = ParagraphStyle(
+        name="ArabicSignature",
+        fontName="Amiri",
+        fontSize=11,
+        leading=16,
+        alignment=1,
+    )
 
     elements = []
 
+    # 1. العنوان والترويسة
     elements.append(
         Paragraph(
             process_arabic(
@@ -424,7 +432,7 @@ def generate_pdf_report(data_df, program_filter):
     )
     elements.append(Spacer(1, 10))
 
-    # 1. الإحصائيات العامة
+    # 2. الإحصائيات العامة
     elements.append(
         Paragraph(process_arabic("1. الإحصائيات العامة:"), heading_style)
     )
@@ -463,9 +471,9 @@ def generate_pdf_report(data_df, program_filter):
         )
     )
     elements.append(t1)
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 15))
 
-    # 2. الإحصائيات حسب التواريخ
+    # 3. الإحصائيات حسب التواريخ
     if "وقت أداء الاختبار" in data_df.columns:
         elements.append(
             Paragraph(
@@ -520,9 +528,9 @@ def generate_pdf_report(data_df, program_filter):
             )
         )
         elements.append(t2)
-        elements.append(Spacer(1, 20))
+        elements.append(Spacer(1, 15))
 
-    # 3. الإحصائيات حسب البرامج
+    # 4. الإحصائيات حسب البرامج
     if "البرنامج" in data_df.columns:
         elements.append(
             Paragraph(
@@ -570,6 +578,34 @@ def generate_pdf_report(data_df, program_filter):
             )
         )
         elements.append(t3)
+
+    # ✍️ 5. تذييل التقرير والتوقيعات
+    elements.append(Spacer(1, 35))
+
+    signatures_data = [
+        [
+            Paragraph(
+                process_arabic("<b>مدير الفرع</b><br/><br/>أحمد الجنزوري"),
+                signature_style,
+            ),
+            Paragraph(
+                process_arabic("<b>المختص</b><br/><br/>..........................."),
+                signature_style,
+            ),
+        ]
+    ]
+
+    sig_table = Table(signatures_data, colWidths=[250, 250])
+    sig_table.setStyle(
+        TableStyle(
+            [
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 10),
+            ]
+        )
+    )
+    elements.append(sig_table)
 
     doc.build(elements)
     buffer.seek(0)
