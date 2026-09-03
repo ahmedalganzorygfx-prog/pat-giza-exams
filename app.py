@@ -5,7 +5,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-# 1. إعدادات الصفحة (كما كانت)
+# 1. إعدادات الصفحة
 st.set_page_config(
     page_title="لوحة تحكم الامتحانات - فرع الجيزة",
     page_icon="📝",
@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق ومحاذاة الجدول وإظهار الخطوط بوضوح (التصميم الأصلي)
+# 🎨 CSS لتنسيق التطبيق وضمان ظهور الخطوط في الوضعين الفاتح والداكن (Light & Dark Mode)
 st.markdown(
     """
     <style>
@@ -55,7 +55,6 @@ st.markdown(
     [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
         text-align: center !important;
         width: 100% !important;
-        color: #ffffff !important;
     }
 
     /* 🔘 توسيط حاوية أزرار الراديو بداخل السايدبار */
@@ -73,7 +72,7 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 🎨 إصلاح لون الخط في القائمة الجانبية ليصبح أبيض وواضح جداً */
+    /* 🎨 أزرار القائمة الجانبية */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #ffffff !important;
@@ -92,7 +91,6 @@ st.markdown(
         text-align: center !important;
     }
 
-    /* إظهار النص بوضوح داخل عناصر الراديو */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label p {
         color: #ffffff !important;
         font-weight: 800 !important;
@@ -114,7 +112,7 @@ st.markdown(
         box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
     }
 
-    /* 🎯 بطاقة الهيدر الملونة والأنيقة */
+    /* 🎯 بطاقة الهيدر الملونة والأنيقة (تظل ألوانها ثابتة بداكن أنيق في الوضعين) */
     .header-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #334155;
@@ -137,7 +135,7 @@ st.markdown(
     }
 
     .main-title {
-        color: #ffffff;
+        color: #ffffff !important;
         font-size: 30px;
         font-weight: 800;
         margin-bottom: 8px;
@@ -145,22 +143,21 @@ st.markdown(
     }
 
     .sub-title {
-        color: #38bdf8;
+        color: #38bdf8 !important;
         font-size: 22px;
         font-weight: 700;
     }
 
-    /* 🎯 توسيط العناوين الفرعية */
+    /* 🎯 إصلاح العناوين الفرعية لتتوافق مع الوضع الفاتح والداكن تلقائياً */
     .section-title-center {
         text-align: center !important;
         font-size: 24px !important;
         font-weight: 800 !important;
-        color: #ffffff !important;
         margin-top: 20px !important;
         margin-bottom: 15px !important;
     }
 
-    /* 📊 إصلاح لون خط كروت الإحصائيات (Metrics) ليظهر بشكل واضح جداً */
+    /* 📊 إصلاح كروت الإحصائيات (Metrics) والنصوص بالكامل لتبدو واضحة بالوضعين */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -171,7 +168,7 @@ st.markdown(
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3) !important;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
     }
 
     div[data-testid="stMetric"] > div {
@@ -183,7 +180,7 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] {
-        color: #38bdf8 !important;
+        color: #0284c7 !important;
         font-size: 17px !important;
         font-weight: 800 !important;
         width: 100% !important;
@@ -193,7 +190,7 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
-        color: #38bdf8 !important;
+        color: #0284c7 !important;
         font-weight: 800 !important;
     }
 
@@ -232,7 +229,7 @@ st.markdown(
         border: 1px solid #334155;
         padding: 8px 16px;
         border-radius: 20px;
-        color: #ffffff;
+        color: #ffffff !important;
         font-weight: 700;
         font-size: 14px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -331,7 +328,7 @@ selected_program = st.sidebar.radio(
 )
 
 
-# 4. قراءة البيانات (مُعدّلة لتفريغ الـ Cache تلقائياً عند تغيير الملف)
+# 4. قراءة البيانات (تحديث الـ Cache تلقائياً عند تعديل الملف)
 @st.cache_data
 def load_data_from_project(file_path, mtime=None):
     try:
@@ -350,7 +347,6 @@ if not excel_files:
     st.stop()
 
 file_path = excel_files[0]
-# الاعتماد على زمن آخر تعديل للملف لضمان تحديث الإحصائيات تلقائياً
 file_mtime = os.path.getmtime(file_path)
 df, err_msg = load_data_from_project(file_path, file_mtime)
 
@@ -371,7 +367,7 @@ with col_reset:
     st.write(" ")
     st.write(" ")
     if st.button("🔄 إعادة تعيين", use_container_width=True):
-        st.cache_data.clear()  # تفريغ الذاكرة المؤقتة وإعادة التشغيل
+        st.cache_data.clear()
         st.rerun()
 
 # 6. فلترة البيانات
@@ -403,7 +399,7 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 7. الإحصائيات العامة (توسيع الحالات لقراءة كافّة مصطلحات ملف الإكسيل)
+# 7. الإحصائيات العامة
 st.markdown(
     '<div class="section-title-center">📊 الإحصائيات العامة</div>',
     unsafe_allow_html=True,
