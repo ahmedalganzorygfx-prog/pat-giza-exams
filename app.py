@@ -1,9 +1,33 @@
 import base64
 import glob
+import io
 import os
 import altair as alt
 import pandas as pd
 import streamlit as st
+
+# مكتبات ReportLab لتوليد ملف الـ PDF
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
+# دعم اللغة العربية في ReportLab
+try:
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+
+    def process_arabic(text):
+        if not text or str(text) == "-":
+            return "-"
+        reshaped = arabic_reshaper.reshape(str(text))
+        return get_display(reshaped)
+
+except ImportError:
+
+    def process_arabic(text):
+        return str(text)
+
 
 # 1. إعدادات الصفحة
 st.set_page_config(
@@ -22,7 +46,6 @@ st.markdown(
         direction: rtl;
     }
 
-    /* 🎯 محاذاة عناوين وأجسام جدول البيانات من اليمين للجميع */
     [data-testid="stDataFrame"] div[role="columnheader"] {
         text-align: right !important;
         justify-content: flex-start !important;
@@ -34,7 +57,6 @@ st.markdown(
         direction: rtl !important;
     }
 
-    /* 🎯 محاذاة وتوسيط عناصر السايدبار بالكامل */
     [data-testid="stSidebar"] {
         direction: rtl;
         text-align: center !important;
@@ -46,18 +68,15 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 🛠️ إخفاء عناصر السايدبار عند التقليص */
     [data-testid="stSidebar"][aria-expanded="false"] [data-testid="stSidebarContent"] {
         display: none !important;
     }
 
-    /* 🎯 توسيط عنوان السايدبار */
     [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
         text-align: center !important;
         width: 100% !important;
     }
 
-    /* 🔘 توسيط حاوية أزرار الراديو بداخل السايدبار */
     [data-testid="stSidebar"] div[data-testid="stRadio"] {
         width: 100% !important;
         display: flex !important;
@@ -72,7 +91,6 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 🎨 أزرار القائمة الجانبية */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
         color: #ffffff !important;
@@ -112,7 +130,6 @@ st.markdown(
         box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
     }
 
-    /* 🎯 بطاقة الهيدر الملونة والأنيقة */
     .header-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #334155;
@@ -148,7 +165,6 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* 🎯 العناوين الفرعية */
     .section-title-center {
         text-align: center !important;
         font-size: 24px !important;
@@ -157,7 +173,6 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 تصميم البطاقات الإحصائية المخصصة بـ HTML بدلاً من st.metric */
     .custom-metric-card {
         background-color: #1e293b;
         border: 1px solid #334155;
@@ -172,10 +187,9 @@ st.markdown(
         margin-bottom: 10px;
     }
 
-    /* ✨ عنوان البطاقة مع الهايلايت الأصفر المباشر */
     .custom-metric-title {
-        background-color: #facc15 !important; /* لون الهايلايت الأصفر */
-        color: #0f172a !important;            /* لون النص الداكن للوضوح */
+        background-color: #facc15 !important;
+        color: #0f172a !important;
         padding: 4px 14px !important;
         border-radius: 8px !important;
         font-size: 16px !important;
@@ -185,7 +199,6 @@ st.markdown(
         margin-bottom: 8px !important;
     }
 
-    /* 🔢 الرقم الإحصائي الأبيض الكبير */
     .custom-metric-value {
         color: #ffffff !important;
         font-size: 32px !important;
@@ -194,7 +207,6 @@ st.markdown(
         line-height: 1.2 !important;
     }
 
-    /* 🎨 تصميم خريطة البرامج المخصصة (Custom Legend) */
     .custom-legend-container {
         display: flex;
         flex-wrap: wrap;
@@ -225,7 +237,6 @@ st.markdown(
         display: inline-block;
     }
 
-    /* 💡 بطاقة الحقوق في أسفل الصفحة (Footer) */
     .page-footer-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #38bdf8;
@@ -250,7 +261,6 @@ st.markdown(
 )
 
 
-# دالة تحويل الصورة إلى Base64
 def get_image_base64(path):
     if os.path.exists(path):
         with open(path, "rb") as image_file:
@@ -261,7 +271,6 @@ def get_image_base64(path):
     return None
 
 
-# 2. البحث عن اللوجو وعرضه
 possible_files = [
     "logo.png",
     "logo.jpg",
@@ -311,7 +320,6 @@ selected_program = st.sidebar.radio(
 )
 
 
-# 4. قراءة البيانات (تحديث الـ Cache تلقائياً عند تعديل الملف)
 @st.cache_data
 def load_data_from_project(file_path, mtime=None):
     try:
@@ -382,17 +390,11 @@ if search_query:
     )
     filtered_df = filtered_df[cond_code | cond_id]
 
-# 7. الإحصائيات العامة (تم استبدالها بـ HTML لضمان ظهور الهايلايت 100%)
-st.markdown(
-    '<div class="section-title-center">📊 الإحصائيات العامة</div>',
-    unsafe_allow_html=True,
-)
-
+# 7. حساب الإحصائيات العامة
 total = len(filtered_df)
 
 if "الحالة" in filtered_df.columns:
     status_series = filtered_df["الحالة"].astype(str).str.strip()
-
     reserved = len(
         status_series[
             status_series.isin(
@@ -408,7 +410,249 @@ if "الحالة" in filtered_df.columns:
 else:
     reserved = passed = failed = pending = 0
 
-# إنشاء بطاقات الإحصائيات المخصصة
+
+# 📄 دالة إنشاء تقرير PDF الإحصائي
+def generate_pdf_report(data_df, program_filter):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30
+    )
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        name="ArabicTitle",
+        fontName="Helvetica-Bold",
+        fontSize=18,
+        alignment=1,
+        spaceAfter=15,
+    )
+    subtitle_style = ParagraphStyle(
+        name="ArabicSubTitle",
+        fontName="Helvetica",
+        fontSize=12,
+        alignment=1,
+        spaceAfter=20,
+    )
+    heading_style = ParagraphStyle(
+        name="ArabicHeading",
+        fontName="Helvetica-Bold",
+        fontSize=14,
+        alignment=2,
+        spaceAfter=10,
+    )
+    cell_style = ParagraphStyle(
+        name="ArabicCell",
+        fontName="Helvetica",
+        fontSize=10,
+        alignment=1,
+    )
+    header_cell_style = ParagraphStyle(
+        name="ArabicHeaderCell",
+        fontName="Helvetica-Bold",
+        fontSize=10,
+        alignment=1,
+        textColor=colors.whitesmoke,
+    )
+
+    elements = []
+
+    # العنوان الرئيسي
+    elements.append(
+        Paragraph(
+            process_arabic(
+                "تقرير إحصائيات الامتحانات - الأكاديمية المهنية للمعلمين فرع الجيزة"
+            ),
+            title_style,
+        )
+    )
+    now_str = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M")
+    prog_str = (
+        f"البرنامج المفلتر: {program_filter}"
+        if program_filter != "الكل"
+        else "جميع البرامج التدريبية"
+    )
+    elements.append(
+        Paragraph(
+            process_arabic(f"تاريخ استخراج التقرير: {now_str}  |  {prog_str}"),
+            subtitle_style,
+        )
+    )
+    elements.append(Spacer(1, 10))
+
+    # 1. جدول الإحصائيات العامة
+    elements.append(
+        Paragraph(process_arabic("1. الإحصائيات العامة:"), heading_style)
+    )
+
+    stats_headers = [
+        "قيد الاختبار",
+        "راسبين",
+        "ناجحين",
+        "حجز اختبار",
+        "إجمالي الممتحنين",
+    ]
+    stats_data_row = [pending, failed, passed, reserved, total]
+
+    table1_data = [
+        [
+            Paragraph(process_arabic(h), header_cell_style)
+            for h in stats_headers
+        ],
+        [
+            Paragraph(process_arabic(str(val)), cell_style)
+            for val in stats_data_row
+        ],
+    ]
+
+    t1 = Table(table1_data, colWidths=[100, 100, 100, 100, 120])
+    t1.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e293b")),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
+                ("BACKGROUND", (0, 1), (-1, 1), colors.HexColor("#f8fafc")),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+                ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ]
+        )
+    )
+    elements.append(t1)
+    elements.append(Spacer(1, 20))
+
+    # 2. جدول الإحصائيات حسب التواريخ
+    if "وقت أداء الاختبار" in data_df.columns:
+        elements.append(
+            Paragraph(
+                process_arabic("2. توزيع الإحصائيات حسب التواريخ:"),
+                heading_style,
+            )
+        )
+
+        temp_df = data_df.copy()
+        temp_df["التاريخ"] = (
+            temp_df["وقت أداء الاختبار"]
+            .astype(str)
+            .apply(lambda x: x.split(" ")[0] if " " in x else x)
+        )
+
+        date_group = (
+            temp_df.groupby("التاريخ")
+            .size()
+            .reset_index(name="إجمالي الممتحنين")
+        )
+
+        date_table_headers = ["إجمالي الممتحنين", "التاريخ"]
+        date_table_rows = [
+            [
+                Paragraph(process_arabic(h), header_cell_style)
+                for h in date_table_headers
+            ]
+        ]
+
+        for _, row in date_group.iterrows():
+            date_table_rows.append(
+                [
+                    Paragraph(
+                        process_arabic(str(row["إجمالي الممتحنين"])), cell_style
+                    ),
+                    Paragraph(process_arabic(str(row["التاريخ"])), cell_style),
+                ]
+            )
+
+        t2 = Table(date_table_rows, colWidths=[250, 250])
+        t2.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#0284c7")),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f1f5f9")]),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ]
+            )
+        )
+        elements.append(t2)
+        elements.append(Spacer(1, 20))
+
+    # 3. جدول الإحصائيات حسب البرامج التدريبية
+    if "البرنامج" in data_df.columns:
+        elements.append(
+            Paragraph(
+                process_arabic("3. توزيع الممتحنين حسب البرنامج التدريبي:"),
+                heading_style,
+            )
+        )
+
+        prog_group = (
+            data_df.groupby("البرنامج")
+            .size()
+            .reset_index(name="عدد الممتحنين")
+        )
+
+        prog_table_headers = ["عدد الممتحنين", "البرنامج التدريبي"]
+        prog_table_rows = [
+            [
+                Paragraph(process_arabic(h), header_cell_style)
+                for h in prog_table_headers
+            ]
+        ]
+
+        for _, row in prog_group.iterrows():
+            prog_table_rows.append(
+                [
+                    Paragraph(
+                        process_arabic(str(row["عدد الممتحنين"])), cell_style
+                    ),
+                    Paragraph(process_arabic(str(row["البرنامج"])), cell_style),
+                ]
+            )
+
+        t3 = Table(prog_table_rows, colWidths=[150, 350])
+        t3.setStyle(
+            TableStyle(
+                [
+                    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#334155")),
+                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+                    ("GRID", (0, 0), (-1, -1), 1, colors.HexColor("#cbd5e1")),
+                    ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f8fafc")]),
+                    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                    ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ]
+            )
+        )
+        elements.append(t3)
+
+    doc.build(elements)
+    buffer.seek(0)
+    return buffer
+
+
+# زر تحميل تقرير الـ PDF ورأس قسم الإحصائيات
+col_title, col_pdf = st.columns([3, 1])
+
+with col_title:
+    st.markdown(
+        '<div class="section-title-center">📊 الإحصائيات العامة</div>',
+        unsafe_allow_html=True,
+    )
+
+with col_pdf:
+    st.write(" ")
+    pdf_bytes = generate_pdf_report(filtered_df, selected_program)
+    st.download_button(
+        label="📄 استخراج تقرير PDF",
+        data=pdf_bytes,
+        file_name=f"تقرير_الإحصائيات_{pd.Timestamp.now().strftime('%Y%m%d')}.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+    )
+
+# عرض بطاقات الإحصائيات
 metrics_data = [
     ("📊 إجمالي الممتحنين", total),
     ("🎟️ حجز اختبار", reserved),
@@ -438,7 +682,7 @@ if "البرنامج" in df.columns and not df.empty:
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
-    colors = [
+    colors_list = [
         "#38bdf8",
         "#f59e0b",
         "#10b981",
@@ -458,7 +702,7 @@ if "البرنامج" in df.columns and not df.empty:
                 type="nominal",
                 scale=alt.Scale(
                     domain=prog_counts["البرنامج_التدريبي"].tolist(),
-                    range=colors[: len(prog_counts)],
+                    range=colors_list[: len(prog_counts)],
                 ),
                 legend=None,
             ),
@@ -475,7 +719,7 @@ if "البرنامج" in df.columns and not df.empty:
 
     legend_items = []
     for idx, row in prog_counts.iterrows():
-        color = colors[idx % len(colors)]
+        color = colors_list[idx % len(colors_list)]
         label = row["البرنامج_التدريبي"]
         count = row["عدد_الممتحنين"]
         item = f"""<div class="custom-legend-item">
