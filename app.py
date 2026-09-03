@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق وضمان ظهور الخطوط في الوضعين الفاتح والداكن (Light & Dark Mode)
+# 🎨 CSS لتنسيق التطبيق وضمان ظهور الخطوط والعناوين بلون فاتح وواضح جداً
 st.markdown(
     """
     <style>
@@ -112,7 +112,7 @@ st.markdown(
         box-shadow: 0 0 12px rgba(56, 189, 248, 0.6) !important;
     }
 
-    /* 🎯 بطاقة الهيدر الملونة والأنيقة (تظل ألوانها ثابتة بداكن أنيق في الوضعين) */
+    /* 🎯 بطاقة الهيدر الملونة والأنيقة */
     .header-card {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
         border: 2px solid #334155;
@@ -148,7 +148,7 @@ st.markdown(
         font-weight: 700;
     }
 
-    /* 🎯 إصلاح العناوين الفرعية لتتوافق مع الوضع الفاتح والداكن تلقائياً */
+    /* 🎯 العناوين الفرعية */
     .section-title-center {
         text-align: center !important;
         font-size: 24px !important;
@@ -157,7 +157,7 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 إصلاح كروت الإحصائيات (Metrics) والنصوص بالكامل لتبدو واضحة بالوضعين */
+    /* 📊 كروت الإحصائيات (Metrics) - تعديل لون العناوين إلى السماوي الفاتح المضيء (#38bdf8) */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -179,9 +179,10 @@ st.markdown(
         justify-content: center !important;
     }
 
+    /* ✨ تعديل لون عنوان البطاقة ليكون فاتحاً وواضحاً جداً */
     div[data-testid="stMetricLabel"] {
-        color: #0284c7 !important;
-        font-size: 17px !important;
+        color: #38bdf8 !important;
+        font-size: 18px !important;
         font-weight: 800 !important;
         width: 100% !important;
         display: flex !important;
@@ -190,7 +191,7 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
-        color: #0284c7 !important;
+        color: #38bdf8 !important;
         font-weight: 800 !important;
     }
 
