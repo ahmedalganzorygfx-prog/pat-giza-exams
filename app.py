@@ -76,7 +76,7 @@ st.markdown(
     /* 🎨 إصلاح لون الخط في القائمة الجانبية ليصبح أبيض وواضح جداً */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-        color: #ffffff !important; /* 👈 تم تغييره للون الأبيض الناصع */
+        color: #ffffff !important;
         border: 2px solid #334155 !important;
         padding: 12px 15px !important;
         border-radius: 12px !important;
@@ -183,7 +183,7 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] {
-        color: #38bdf8 !important; /* 👈 تغيير اللون إلى الأزرق السماوي المضيء */
+        color: #38bdf8 !important;
         font-size: 17px !important;
         font-weight: 800 !important;
         width: 100% !important;
@@ -193,12 +193,12 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
-        color: #38bdf8 !important; /* 👈 تأكيد ظهور النص أزرق سماوي بوضوح */
+        color: #38bdf8 !important;
         font-weight: 800 !important;
     }
 
     div[data-testid="stMetricValue"] {
-        color: #ffffff !important; /* 👈 الأرقام باللون الأبيض الناصع */
+        color: #ffffff !important;
         font-size: 32px !important;
         font-weight: 900 !important;
         width: 100% !important;
@@ -446,13 +446,14 @@ if "البرنامج" in df.columns and not df.empty:
     prog_counts = df["البرنامج"].value_counts().reset_index()
     prog_counts.columns = ["البرنامج_التدريبي", "عدد_الممتحنين"]
 
+    # 🎯 إزالة الفاصلة المزدوجة الزائدة لحل مشكلة SyntaxError
     colors = [
         "#38bdf8",
         "#f59e0b",
         "#10b981",
         "#ec4899",
         "#8b5cf6",
-        "#6366f1",,
+        "#6366f1",
         "#14b8a6",
     ]
 
