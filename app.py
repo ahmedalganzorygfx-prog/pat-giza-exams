@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق التطبيق ومحاذاة الجدول والعناصر من اليمين
+# 🎨 CSS لتنسيق التطبيق ومحاذاة الجدول وإظهار الخطوط بوضوح
 st.markdown(
     """
     <style>
@@ -55,6 +55,7 @@ st.markdown(
     [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2, [data-testid="stSidebar"] h3 {
         text-align: center !important;
         width: 100% !important;
+        color: #ffffff !important;
     }
 
     /* 🔘 توسيط حاوية أزرار الراديو بداخل السايدبار */
@@ -72,27 +73,31 @@ st.markdown(
         align-items: center !important;
     }
 
-    /* 🎨 تنسيق أزرار التبويبات وتوسيط النص بالداخل */
+    /* 🎨 إصلاح لون الخط في القائمة الجانبية ليصبح أبيض وواضح جداً */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-        color: #e2e8f0 !important;
+        color: #ffffff !important; /* 👈 تم تغييره للون الأبيض الناصع */
         border: 2px solid #334155 !important;
         padding: 12px 15px !important;
         border-radius: 12px !important;
         font-weight: 800 !important;
-        font-size: 14px !important;
+        font-size: 15px !important;
         cursor: pointer !important;
         transition: all 0.25s ease-in-out !important;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3) !important;
         width: 100% !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
+        justify-content: space-between !important;
         text-align: center !important;
     }
 
-    [data-testid="stSidebar"] div[data-testid="stRadio"] label > div:first-child {
-        display: none !important;
+    /* إظهار النص بوضوح داخل عناصر الراديو */
+    [data-testid="stSidebar"] div[data-testid="stRadio"] label p {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+        font-size: 15px !important;
+        margin: 0 !important;
     }
 
     [data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
@@ -155,7 +160,7 @@ st.markdown(
         margin-bottom: 15px !important;
     }
 
-    /* 📊 توسيط كروت الإحصائيات بالكامل */
+    /* 📊 إصلاح لون خط كروت الإحصائيات (Metrics) ليظهر بشكل واضح جداً */
     div[data-testid="stMetric"] {
         background-color: #1e293b !important;
         padding: 18px 10px !important;
@@ -178,24 +183,24 @@ st.markdown(
     }
 
     div[data-testid="stMetricLabel"] {
-        color: #94a3b8 !important;
-        font-size: 16px !important;
-        font-weight: 700 !important;
+        color: #38bdf8 !important; /* 👈 تغيير اللون إلى الأزرق السماوي المضيء */
+        font-size: 17px !important;
+        font-weight: 800 !important;
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
         text-align: center !important;
     }
 
-    div[data-testid="stMetricLabel"] > div {
-        width: 100% !important;
-        text-align: center !important;
+    div[data-testid="stMetricLabel"] label, div[data-testid="stMetricLabel"] p {
+        color: #38bdf8 !important; /* 👈 تأكيد ظهور النص أزرق سماوي بوضوح */
+        font-weight: 800 !important;
     }
 
     div[data-testid="stMetricValue"] {
-        color: #f8fafc !important;
-        font-size: 30px !important;
-        font-weight: 800 !important;
+        color: #ffffff !important; /* 👈 الأرقام باللون الأبيض الناصع */
+        font-size: 32px !important;
+        font-weight: 900 !important;
         width: 100% !important;
         display: flex !important;
         justify-content: center !important;
@@ -206,6 +211,7 @@ st.markdown(
     div[data-testid="stMetricValue"] > div {
         width: 100% !important;
         text-align: center !important;
+        color: #ffffff !important;
     }
 
     /* 🎨 تصميم خريطة البرامج المخصصة (Custom Legend) */
@@ -446,7 +452,7 @@ if "البرنامج" in df.columns and not df.empty:
         "#10b981",
         "#ec4899",
         "#8b5cf6",
-        "#6366f1",
+        "#6366f1",,
         "#14b8a6",
     ]
 
@@ -497,8 +503,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 🎯 عكس ترتيب القائمة لتظهر بصرية في الجدول من اليمين إلى اليسار:
-# (أقصى اليمين: كود المعلم -> اسم المعلم -> الرقم القومي -> البرنامج -> الحالة -> وقت أداء الاختبار :أقصى اليسار)
 desired_order_rtl = [
     "وقت أداء الاختبار",
     "الحالة",
@@ -508,7 +512,6 @@ desired_order_rtl = [
     "كود المعلم",
 ]
 
-# التأكد من وجود العمود في الملف
 columns_to_show = [
     col for col in desired_order_rtl if col in filtered_df.columns
 ]
