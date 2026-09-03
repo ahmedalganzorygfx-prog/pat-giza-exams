@@ -51,7 +51,7 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# 🎨 CSS لتنسيق الواجهة والبطاقات والسايدبار
+# 🎨 CSS لتنسيق الواجهة والبطاقات والسايدبار (مع حل مشكلة لون خط البرامج)
 st.markdown(
     """
     <style>
@@ -79,9 +79,9 @@ st.markdown(
         display: none !important;
     }
 
+    /* 🎨 تعديل تنسيق وحجم وألوان أزرار السايدبار */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
-        color: #ffffff !important;
         border: 2px solid #334155 !important;
         padding: 12px 15px !important;
         border-radius: 12px !important;
@@ -92,6 +92,13 @@ st.markdown(
         text-align: center !important;
     }
 
+    /* 🎯 جعل لون النص داخل البطاقات أبيض ناصع وواضح جداً */
+    [data-testid="stSidebar"] div[data-testid="stRadio"] label p {
+        color: #ffffff !important;
+        font-weight: 800 !important;
+    }
+
+    /* البطاقة المحددة (Active) */
     [data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"] {
         background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
         border-color: #38bdf8 !important;
